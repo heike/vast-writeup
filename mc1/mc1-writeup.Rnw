@@ -1,0 +1,242 @@
+\documentclass[journal]{vgtc}                % final (journal style)
+%\documentclass[review,journal]{vgtc}         % review (journal style)
+%\documentclass[widereview]{vgtc}             % wide-spaced review
+%\documentclass[preprint,journal]{vgtc}       % preprint (journal style)
+%\documentclass[electronic,journal]{vgtc}     % electronic version, journal
+
+%% Uncomment one of the lines above depending on where your paper is
+%% in the conference process. ``review'' and ``widereview'' are for review
+%% submission, ``preprint'' is for pre-publication, and the final version
+%% doesn't use a specific qualifier. Further, ``electronic'' includes
+%% hyperreferences for more convenient online viewing.
+
+%% Please use one of the ``review'' options in combination with the
+%% assigned online id (see below) ONLY if your paper uses a double blind
+%% review process. Some conferences, like IEEE Vis and InfoVis, have NOT
+%% in the past.
+
+%% Please note that the use of figures other than the optional teaser is not permitted on the first page
+%% of the journal version.  Figures should begin on the second page and be
+%% in CMYK or Grey scale format, otherwise, colour shifting may occur
+%% during the printing process.  Papers submitted with figures other than the optional teaser on the
+%% first page will be refused.
+
+%% These three lines bring in essential packages: ``mathptmx'' for Type 1
+%% typefaces, ``graphicx'' for inclusion of EPS figures. and ``times''
+%% for proper handling of the times font family.
+
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{times}
+
+%% We encourage the use of mathptmx for consistent usage of times font
+%% throughout the proceedings. However, if you encounter conflicts
+%% with other math-related packages, you may want to disable it.
+
+%% This turns references into clickable hyperlinks.
+\usepackage[bookmarks,backref=true,linkcolor=black]{hyperref} %,colorlinks
+\hypersetup{
+  pdfauthor = {},
+  pdftitle = {},
+  pdfsubject = {},
+  pdfkeywords = {},
+  colorlinks=true,
+  linkcolor= black,
+  citecolor= black,
+  pageanchor=true,
+  urlcolor = black,
+  plainpages = false,
+  linktocpage
+}
+
+%% If you are submitting a paper to a conference for review with a double
+%% blind reviewing process, please replace the value ``0'' below with your
+%% OnlineID. Otherwise, you may safely leave it at ``0''.
+\onlineid{0}
+
+%% declare the category of your paper, only shown in review mode
+\vgtccategory{Research}
+
+%% allow for this line if you want the electronic option to work properly
+\vgtcinsertpkg
+
+%% In preprint mode you may define your own headline.
+%\preprinttext{To appear in IEEE Transactions on Visualization and Computer Graphics.}
+
+%% Paper title.
+
+\title{submission to the MC1 data challenge}
+
+%% This is how authors are specified in the journal style
+
+%% indicate IEEE Member or Student Member in form indicated below
+\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare and Vianey Leos-Barajas}
+\authorfooter{
+%% insert punctuation at end of each item
+\item
+ Heike Hofmann is with the Department of Statistics, Iowa State University. E-mail: hofmann@iastate.edu.
+\item
+ Dianne Cook is with the Department of . E-mail: dicook@monash.edu.
+\item
+ Andee Kaplan is with the Department of Statistics, Iowa State University. E-mail: ajkaplan@iastate.edu.
+\item
+ Eric Hare is with the Department of Statistics, Iowa State University. E-mail: erichare@iastate.edu.
+ \item
+ Vianey Leos-Barajas is with the Department of Statistics, Iowa State University. E-mail: vianey@iastate.edu.}
+
+%other entries to be set up for journal
+\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: we need a good title}
+%\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
+
+%% Abstract section.
+\abstract{Here goes the abstract.
+} % end of abstract
+
+%% Keywords that describe your work. Will show as 'Index Terms' in journal
+%% please capitalize first letter and insert punctuation after last keyword
+\keywords{Keywords that describe your work. Will show as 'Index Terms' in journal
+ please capitalize first letter and insert punctuation after last keyword}
+
+%% ACM Computing Classification System (CCS). 
+%% See <http://www.acm.org/class/1998/> for details.
+%% The ``\CCScat'' command takes four arguments.
+
+\CCScatlist{ % not used in journal version
+ \CCScat{K.6.1}{Management of Computing and Information Systems}%
+{Project and People Management}{Life Cycle};
+ \CCScat{K.7.m}{The Computing Profession}{Miscellaneous}{Ethics}
+}
+
+
+
+
+%% Uncomment below to include a teaser figure.
+   \teaser{
+    \centering
+%    \includegraphics[width=16cm]{sunflower}
+
+   \caption{In the Clouds: Vancouver from Cypress Mountain.}
+  }
+
+%% Uncomment below to disable the manuscript note
+%\renewcommand{\manuscriptnotetxt}{}
+
+%% Copyright space is enabled by default as required by guidelines.
+%% It is disabled by the 'review' option or via the following command:
+% \nocopyrightspace
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% START OF THE PAPER %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%% The ``\maketitle'' command must be the first command after the
+%% ``\begin{document}'' command. It prepares and prints the title block.
+
+%% the only exception to this rule is the \firstsection command
+\firstsection{Data Manipulation}
+\maketitle
+here we need to talk about a few things.
+
+\section{Results}
+
+<<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+library(readr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(jpeg)
+library(ggmap)
+library(grid)
+@
+
+<<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
+  Timestamp = col_character()))
+sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
+  Timestamp = col_character()))
+sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
+  Timestamp = col_character()))
+move <- rbind(fri, sat, sun)
+rm(fri, sat, sun)
+
+move$Timestamp <- ymd_hms(move$Timestamp)
+move$day <- wday(move$Timestamp, label=TRUE)
+move$hour <- as.numeric(hour(move$Timestamp))
+move$min <- as.numeric(minute(move$Timestamp))
+move <- subset(move, !is.na(day))
+move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
+
+movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
+@
+
+Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot: 
+
+<<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', fig.cap='Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.', cache=TRUE>>=
+rects <- data.frame(ymax=25000, xmin=20+12/60, xmax=24, ymin=-100, day="Fri")
+sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat"))
+showrects <- data.frame(ymax=25000, xmin=c(10, 15, 10), xmax=c(11, 16, 11), ymin=-100, day=c("Sat", "Sat", "Sun"))
+#noshowrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day="Sun")
+
+scottjones <- movebymin %>% filter(type=="movement") %>% 
+  group_by(day, hour) %>% 
+  summarize(sc=mean(n))
+
+ggplot(data=subset(movebymin, type=="movement")) + theme_bw() + 
+  geom_rect(aes(ymax=25000, ymin=-100, xmin=10, xmax=11), 
+            fill="grey93", alpha=0.8) +
+#  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+#            fill="grey90", alpha=0.5, data=rects) +
+  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+            fill="grey90", alpha=0.8, data=sjrects) +
+  geom_text(aes(label="Scott Jones Show\nin concert space",
+           x = 10.5, y=16500,  day=day), angle = 90,
+           colour="grey70", size=4, data=rects) +
+  geom_text(aes(label="Scott Jones Show\nin concert space",
+           x = 15.5, y=16500,  day=day), angle = 90,
+           colour="grey70", size=4, data=rects) +
+#  geom_text(aes(label="show",
+#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           colour="grey70", size=5, data=showrects) +
+#  geom_text(aes(label="no show",
+#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           colour="grey70", size=5, data=noshowrects) +
+#  geom_text(aes(label="no movements\nrecorded\nin first version",
+#           x = (xmin+xmax)/2, y=12000,  day=day), angle = 90,
+#           colour="grey70", size=5, data=rects) +
+  facet_grid(day~.) + 
+  geom_point(aes(x=hour+min/60, y=n), alpha=0.5) + 
+  geom_segment(aes(y=sc, yend=sc, x=hour, xend=hour+1), 
+               data=subset(scottjones, hour %in% c(9:11, 14:16)),
+               colour="darkorange2", size=1.5, alpha=0.8) + 
+  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am"))) + 
+  xlab("Time of the day") + 
+  ylab("Number of movements by minute") + theme_bw() +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
+  ggtitle("The second Scott Jones show on Sunday got cancelled")
+@
+
+(1) the Scott Jones show was held from 10 to 11 during all mornings and from 3 to 4 in the afternoons of Friday and Saturday. We can see this from the dip in movements (orange lines are average number of moves during one hour) during this time, and the spikes immediately at the end of the show (when a lot of people move out of the area).
+The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the concert space before 10 am for all days but before 3 pm only on Friday and Saturday.
+
+(2) there is a spike in movements on Sunday at around 2:30 pm - judging from the movement pattern these are people on their way to the Scott Jones show who get turned away (because there are no check-ins to the concert space), see also figure 3.
+
+
+%% \section{Introduction} %for journal use above \firstsection{..} instead
+
+
+nulla
+facilisi~\cite{notes2002}. 
+
+%% if specified like this the section will be committed in review mode
+\acknowledgments{
+The authors wish to thank A, B, C. This work was supported in part by
+a grant from XYZ.}
+
+\bibliographystyle{abbrv}
+%%use following if all content of bibtex file should be shown
+%\nocite{*}
+\bibliography{mc1}
+\end{document}
+
