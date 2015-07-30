@@ -137,7 +137,7 @@
 %% the only exception to this rule is the \firstsection command
 \firstsection{Data Manipulation}
 \maketitle
-here we need to talk about a few things.
+here we need to talk about a few things: park.csv
 
 \section{Results}
 
@@ -222,7 +222,20 @@ The second show on Sunday was cancelled: the dip in movements is missing on Sund
 
 (2) there is a spike in movements on Sunday at around 2:30 pm - judging from the movement pattern these are people on their way to the Scott Jones show who get turned away (because there are no check-ins to the concert space), see also figure 3.
 
+<<>>=
+park <- read.csv("data/park.csv")
 
+xybymin <- move %>% filter(type=="check-in") %>% group_by(day, hour, min, X, Y) %>% summarize(n=n())
+xybymin$X <- as.numeric(as.character(xybymin$X))
+xybymin$Y <- as.numeric(as.character(xybymin$Y))
+xybymin <- merge(xybymin, park, by=c("X", "Y"))
+xybytype <- xybymin %>% group_by(day, hour, min, Type) %>% summarize(n=sum(n))
+
+qplot(facets=day~., colour=Name, hour+min/60, n, data=subset(xybymin, Name %in% c("Creighton Pavilion", "concert space"))) + theme_bw() + 
+  theme(legend.position="bottom") + xlab("Time of the day") + ylab("Number of check-ins in each of the areas by minute") + ggtitle("Check-ins to Scott Jones related entertainment") +
+  scale_colour_brewer("Location", palette="Set2") + 
+  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am")))
+@
 %% \section{Introduction} %for journal use above \firstsection{..} instead
 
 
