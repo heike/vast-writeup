@@ -65,7 +65,7 @@
 
 %% Paper title.
 
-\title{submission to the MC1 data challenge}
+\title{Vandals on the move at DinoFun World}
 
 %% This is how authors are specified in the journal style
 
@@ -76,11 +76,11 @@
 \item
  Heike Hofmann, Andee Kaplan, Eric Hare, and Vianey  Leos-Barajas are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey\}@iastate.edu.
 \item
- Dianne Cook is with the Department of . E-mail: dicook@monash.edu.
+ Dianne Cook is with the Department of Econometrics and Business Statistics, Monash University. E-mail: dicook@monash.edu.
  }
 
 %other entries to be set up for journal
-\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: we need a good title}
+\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Vandals on the move}
 %\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
 
 %% Abstract section.
@@ -234,9 +234,9 @@ checkins <- merge(subset(moveplus, type=="check-in"), park, by=c("X", "Y"), all=
 @
 
 \begin{figure}
-<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=12, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 
-ggplot(data=subset(checkins, Type=="Thrill Rides")) +
+ggplot(data=subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))) +
   geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
                      xmax=(hour*60+min+timespent/60)/60, 
                      y=timespent/60, colour=Name), alpha=1/2, size=2) + 
@@ -250,14 +250,43 @@ ggplot(data=subset(checkins, Type=="Thrill Rides")) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
   guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2))
 @
-\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides.}
+\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday.}
 \end{figure}
 
 Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Saturday and Sunday. On Saturday or Sunday park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
 
 
 \subsection{Barcode of activities}
-We define a group as a set of park goers who do rides together.
+We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
+
+For each of the days of the time frame we create a matrix of park goer id and ride id, that consists of 0s and 1s, with a  1 in cell (i,j) indicating that park goer i was on ride j. 
+We then use a binary metric to calculate pairwise distances between park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
+
+For example, if individual i took 23 rides, and j did 25 rides, and they did 20 rides of these together (i.e. in the same 'batch'), the ride based distance between them is (28 - 20)/28 = 0.29. 
+
+Using Ward's method for a hierarchical clustering based on these participant-participant distances, we get groups of park-goers on Friday, Saturday and Sunday. 
+
+
+<<groupsdata, cache=TRUE, echo=FALSE>>=
+checkinsgr <- read.csv("data/checkinsgr.csv")
+checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
+checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
+@
+
+<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=7.5, out.width='\\columnwidth'>>=
+qplot(x=Timestamp, xend=Timestamp+timespent, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
+  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) + 
+  geom_text(aes(x=Timestamp+timespent/2, y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1333734, 759761)), size=3.5) +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) 
+
+#+   scale_x_continuous("Time of the day", breaks=8:23, 
+#                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12))))
+
+# qplot(x=Timestamp, xend=Timestamp+timespent, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% sample(size=15, x=unique(checkinsgr$group))), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
+#     facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) 
+
+@
+
 
 \subsection{Vandals in Creighton Park}
 
@@ -270,7 +299,7 @@ vandals2 <- vandals %>% group_by(hm) %>% mutate(label=paste(id, sep=",", collaps
 scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
 @
 
-<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=TRUE, fig.width=11, fig.height=6>>=
+<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=6>>=
 firstrect <- data.frame(xmin=9.5, xmax=11.5, ymin=0, ymax=200, day=c("Fri", "Sat", "Sun"))
 secondrect <- data.frame(xmin=14.5, xmax=16.5, ymin=0, ymax=200, day=c("Fri", "Sat"))
 ggplot(data=scott) +
