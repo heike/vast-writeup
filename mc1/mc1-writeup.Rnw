@@ -110,7 +110,7 @@
     \centering
     \includegraphics[width=.7\linewidth]{figure/vandals-1.pdf}
 
-   \caption{\label{fig:pavilion} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that the vandalism takes place during this time. Two of the suspects check into the pavilion at 11:30 again and leave within seconds, only to check back into the pavilion at 11:46.}
+   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that the vandalism takes place during this time. Two of the suspects check into the pavilion at 11:30 again and leave within seconds, only to check back into the pavilion at 11:46.}
   }
 
 %% Uncomment below to disable the manuscript note
@@ -134,6 +134,7 @@
 \maketitle
 here we need to talk about a few things: construction of park.csv and time spent in attractions.
 
+Most of our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park.
 \section{Results}
 
 <<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
@@ -253,7 +254,7 @@ ggplot(data=subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))) +
 \caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday.}
 \end{figure}
 
-Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Saturday and Sunday. On Saturday or Sunday park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
+Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
 
 
 \subsection{Barcode of activities}
