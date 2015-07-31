@@ -132,7 +132,7 @@
 %% the only exception to this rule is the \firstsection command
 \firstsection{Data Manipulation}
 \maketitle
-here we need to talk about a few things: park.csv
+here we need to talk about a few things: construction of park.csv and time spent in attractions.
 
 \section{Results}
 
@@ -241,7 +241,8 @@ ggplot(data=subset(checkins, Type=="Thrill Rides")) +
                      xmax=(hour*60+min+timespent/60)/60, 
                      y=timespent/60, colour=Name), alpha=1/2, size=2) + 
   theme_bw() + facet_grid(Name~day, scales="free", space="free") + 
-  scale_x_continuous("Time of the day", breaks=8:23) + 
+  scale_x_continuous("Time of the day", breaks=8:23, 
+                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
   ggtitle("Time spent in Thrill Rides") + 
   ylab("Time spent in Ride (includes waiting time)") + 
   scale_colour_brewer("Location", palette="Paired") +
@@ -254,10 +255,13 @@ ggplot(data=subset(checkins, Type=="Thrill Rides")) +
 
 Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Saturday and Sunday. On Saturday or Sunday park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
 
+
 \subsection{Barcode of activities}
 We define a group as a set of park goers who do rides together.
 
 \subsection{Vandals in Creighton Park}
+
+Figure~\ref{fig:vandals} is constructed similarly to figure~\ref{fig:timeinthrill}, but focuses on the time that park goers spend in Creighton Pavilion, which hosts the Scott Jones exhibit, and at the Scott Jones show in the concert space. Besides the occasional individual, who spend almost all day in the concert space (security personnel should really check on these guys to see that they are OK), there are three suspicious individuals who check into the Creighton Pavilion and spend almost two hours all by themselves.
 
 <<vandalsdata, dependson='checkins', echo=FALSE, cache=TRUE>>=
 vandals <- subset(checkins, Type=="Shows & Entertainment" & timespent > 6000)
@@ -284,9 +288,9 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
   ggtitle("Vandals in the Creighton Pavilion") + 
   geom_text(aes(x=(hour*60+min)/60, y=timespent/60, 
                 label=label), colour="orange", data=vandals2, hjust=-0.1, 
-            vjust=1.4, alpha=1) + 
-    annotate("text", x = 10.5, y =100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=4) + 
-  annotate("text", x = 15.5, y = 100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=4) + 
+            vjust=1.4, alpha=1, size=4) + 
+    annotate("text", x = 10.5, y =100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=3.5) + 
+  annotate("text", x = 15.5, y = 100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=3.5) + 
   scale_colour_brewer("Location", palette="Set2") +
   theme(legend.position="bottom") + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) 
