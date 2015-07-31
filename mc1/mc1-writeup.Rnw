@@ -173,7 +173,8 @@ movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
 
 Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot: 
 
-<<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', fig.cap='Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.', cache=TRUE>>=
+\begin{figure}
+<<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 rects <- data.frame(ymax=25000, xmin=20+12/60, xmax=24, ymin=-100, day="Fri")
 sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat"))
 showrects <- data.frame(ymax=25000, xmin=c(10, 15, 10), xmax=c(11, 16, 11), ymin=-100, day=c("Sat", "Sat", "Sun"))
@@ -216,31 +217,55 @@ ggplot(data=subset(movebymin, type=="movement")) + theme_bw() +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
   ggtitle("The second Scott Jones show on Sunday got cancelled")
 @
+\caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
+\end{figure}
 
 (1) the Scott Jones show was held from 10 to 11 during all mornings and from 3 to 4 in the afternoons of Friday and Saturday. We can see this from the dip in movements (orange lines are average number of moves during one hour) during this time, and the spikes immediately at the end of the show (when a lot of people move out of the area).
 The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the concert space before 10 am for all days but before 3 pm only on Friday and Saturday.
 
 (2) there is a spike in movements on Sunday at around 2:30 pm - judging from the movement pattern these are people on their way to the Scott Jones show who get turned away (because there are no check-ins to the concert space), see also figure 3.
 
-<<>>=
+\subsection{Time in Rides}
+We focus on just the check-in events in the movement data. Each check-in event is coupled with coordinates. Based on the auxiliary information given  on the DinoFun World website (\url{get.the.sites.url}), we derive for each attraction its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. This additional information is incorporated in the data of check-ins.
+
+<<checkins, dependson='readdata', echo=FALSE, cache=TRUE>>=
+moveplus <- move[order(move$day, move$id, move$Timestamp),]
+moveplus$timespent <- c(as.numeric(diff(moveplus$Timestamp)), NA)
+moveplus$timespent[moveplus$timespent < 0] <- NA
+
 park <- read.csv("data/park.csv")
+checkins <- merge(subset(moveplus, type=="check-in"), park, by=c("X", "Y"), all=T)
 
-xybymin <- move %>% filter(type=="check-in") %>% group_by(day, hour, min, X, Y) %>% summarize(n=n())
-xybymin$X <- as.numeric(as.character(xybymin$X))
-xybymin$Y <- as.numeric(as.character(xybymin$Y))
-xybymin <- merge(xybymin, park, by=c("X", "Y"))
-xybytype <- xybymin %>% group_by(day, hour, min, Type) %>% summarize(n=sum(n))
-
-qplot(facets=day~., colour=Name, hour+min/60, n, data=subset(xybymin, Name %in% c("Creighton Pavilion", "concert space"))) + theme_bw() + 
-  theme(legend.position="bottom") + xlab("Time of the day") + ylab("Number of check-ins in each of the areas by minute") + ggtitle("Check-ins to Scott Jones related entertainment") +
-  scale_colour_brewer("Location", palette="Set2") + 
-  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am")))
 @
-%% \section{Introduction} %for journal use above \firstsection{..} instead
 
+\begin{figure}
+<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 
-nulla
-facilisi~\cite{notes2002}. 
+ggplot(data=subset(checkins, Type=="Thrill Rides")) +
+  geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
+                     xmax=(hour*60+min+timespent/60)/60, 
+                     y=timespent/60, colour=Name), alpha=1/2, size=2) + 
+  theme_bw() + facet_grid(Name~day, scales="free", space="free") + 
+  scale_x_continuous("Time of the day", breaks=8:23) + 
+  ggtitle("Time spent in Thrill Rides") + 
+  ylab("Time spent in Ride (includes waiting time)") + 
+  scale_colour_brewer("Location", palette="Paired") +
+  theme(legend.position="bottom") + 
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2))
+@
+\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides.}
+\end{figure}
+
+Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Saturday and Sunday. On Saturday or Sunday park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
+
+\subsection{Barcode of activities}
+We define a group as a set of park goers who do rides together.
+
+\subsection{Vandals in Creighton Park}
+
+\paragraph{Technical Details}
+Thanks to R \cite{R}, and in particular the packages knitr \cite{knitr-package, knitr-book1, knitr-chapter}, ggplot2, dplyr, and XXX.
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
