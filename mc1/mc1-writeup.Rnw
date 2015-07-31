@@ -74,15 +74,10 @@
 \authorfooter{
 %% insert punctuation at end of each item
 \item
- Heike Hofmann is with the Department of Statistics, Iowa State University. E-mail: hofmann@iastate.edu.
+ Heike Hofmann, Andee Kaplan, Eric Hare, and Vianey  Leos-Barajas are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey\}@iastate.edu.
 \item
  Dianne Cook is with the Department of . E-mail: dicook@monash.edu.
-\item
- Andee Kaplan is with the Department of Statistics, Iowa State University. E-mail: ajkaplan@iastate.edu.
-\item
- Eric Hare is with the Department of Statistics, Iowa State University. E-mail: erichare@iastate.edu.
- \item
- Vianey Leos-Barajas is with the Department of Statistics, Iowa State University. E-mail: vianey@iastate.edu.}
+ }
 
 %other entries to be set up for journal
 \shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: we need a good title}
@@ -113,9 +108,9 @@
 %% Uncomment below to include a teaser figure.
    \teaser{
     \centering
-%    \includegraphics[width=16cm]{sunflower}
+    \includegraphics[width=.7\linewidth]{figure/vandals-1.pdf}
 
-   \caption{In the Clouds: Vancouver from Cypress Mountain.}
+   \caption{\label{fig:pavilion} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that the vandalism takes place during this time. Two of the suspects check into the pavilion at 11:30 again and leave within seconds, only to check back into the pavilion at 11:46.}
   }
 
 %% Uncomment below to disable the manuscript note
@@ -263,6 +258,39 @@ Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on
 We define a group as a set of park goers who do rides together.
 
 \subsection{Vandals in Creighton Park}
+
+<<vandalsdata, dependson='checkins', echo=FALSE, cache=TRUE>>=
+vandals <- subset(checkins, Type=="Shows & Entertainment" & timespent > 6000)
+vandals$hm <- with(vandals, paste(hour(Timestamp), minute(Timestamp), sep=":"))
+vandals2 <- vandals %>% group_by(hm) %>% mutate(label=paste(id, sep=",", collapse=", "))
+scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
+@
+
+<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=TRUE, fig.width=10, fig.height=6>>=
+ggplot(data=scott) +
+  geom_rect(ymax=200, xmin=9.5, xmax=11.5, ymin=0, fill="grey90", alpha=0.5) +
+  geom_rect(xmin=14.5, xmax=16.5, ymin=0, ymax=200, fill="grey90", alpha=0.5) +
+  geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
+                     xmax=(hour*60+min+timespent/60)/60, 
+                     y=timespent/60, colour=Name), alpha=0.1, size=2) + 
+  theme_bw() + facet_grid(day~.) + 
+  geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
+                     xmax=(hour*60+min+timespent/60)/60, 
+                     y=timespent/60, colour=Name), size=2, alpha=1,
+                 data=vandals) + 
+#  geom_line(aes(y=timeest), colour="red") + 
+  ylab("Time spent in Creighton Pavilion (in minutes)") + 
+scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
+  ggtitle("Vandals in the Creighton Pavilion") + 
+  geom_text(aes(x=(hour*60+min)/60, y=timespent/60, 
+                label=label), colour="orange", data=vandals2, hjust=-0.1, 
+            vjust=1.4, alpha=1) + 
+    annotate("text", x = 10.5, y =100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=4) + 
+  annotate("text", x = 15.5, y = 100, label = "Scott Jones show\nno admission to Creighton", angle=90, colour="grey70", size=4) + 
+  scale_colour_brewer("Location", palette="Set2") +
+  theme(legend.position="bottom") + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) 
+@
 
 \paragraph{Technical Details}
 Thanks to R \cite{R}, and in particular the packages knitr \cite{knitr-package, knitr-book1, knitr-chapter}, ggplot2, dplyr, and XXX.
