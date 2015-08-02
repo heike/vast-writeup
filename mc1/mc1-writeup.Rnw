@@ -231,27 +231,37 @@ moveplus$timespent[moveplus$timespent < 0] <- NA
 
 park <- read.csv("data/park.csv")
 checkins <- merge(subset(moveplus, type=="check-in"), park, by=c("X", "Y"), all=T)
-
+checkins$dmin <- with(checkins, hour*60+min)
 @
 
 \begin{figure}
-<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=12, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=14, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+checkinsplus <- subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))
+checkinsplus$real <- TRUE
+thrilllimits <- data.frame(timespent=c(20,30,30)*60, day="Fri", 
+       Name=c("Atmosfear", "Keimosaur Big Spin", "Wrightiraptor Mountain"),
+       dmin=480, real=FALSE)
 
-ggplot(data=subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))) +
-  geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
-                     xmax=(hour*60+min+timespent/60)/60, 
+checkinsplus <- rbind(checkinsplus[, c("day", "dmin", "timespent", "Name")], 
+thrilllimits)
+checkinsplus$Namelabel <- gsub(" ", "\n", as.character(checkinsplus$Name))
+
+ggplot(data=checkinsplus) +
+  geom_errorbarh(aes(x=dmin/60, xmin=dmin/60,
+                     xmax=(dmin+timespent/60)/60, 
                      y=timespent/60, colour=Name), alpha=1/2, size=2) + 
-  theme_bw() + facet_grid(Name~day, scales="free", space="free") + 
+  theme_bw() + facet_grid(Namelabel~day, scales="free", space="free") + 
+  theme(strip.text.y = element_text(angle = 0)) + 
   scale_x_continuous("Time of the day", breaks=8:23, 
                      labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
   ggtitle("Time spent in Thrill Rides") + 
   ylab("Time spent in Ride (includes waiting time)") + 
-  scale_colour_brewer("Location", palette="Paired") +
+  scale_colour_brewer("Ride", palette="Paired") +
   theme(legend.position="bottom") + 
   theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
-  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2))
+  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2)) 
 @
-\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday.}
+\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday. Each park goer is a line, the length on the line and its vertical position indicate how much time was spend between checking into the ride and the first recorded move after that.}
 \end{figure}
 
 Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
@@ -300,7 +310,7 @@ vandals2 <- vandals %>% group_by(hm) %>% mutate(label=paste(id, sep=",", collaps
 scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
 @
 
-<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=6, eval=FALSE>>=
+<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=6, eval=TRUE>>=
 firstrect <- data.frame(xmin=9.5, xmax=11.5, ymin=0, ymax=200, day=c("Fri", "Sat", "Sun"))
 secondrect <- data.frame(xmin=14.5, xmax=16.5, ymin=0, ymax=200, day=c("Fri", "Sat"))
 ggplot(data=scott) +
@@ -335,7 +345,7 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
   geom_text(aes(x=x, y=y, label="Creighton Pavilion closed to the public"), colour="grey65", size=3,
             data=data.frame(x=17.5, y=120, day="Sun")) + 
   scale_colour_brewer("Location", palette="Set2") +
-  theme(legend.position="bottom") + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  theme(legend.justification=c(1,0), legend.position=c(1,.8)) + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) 
 @
 
