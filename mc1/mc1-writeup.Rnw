@@ -83,9 +83,9 @@
 \shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: On the move}
 %\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
 
-%% Abstract section.
-\abstract{Here goes the abstract.
-} % end of abstract
+% %% Abstract section.
+% \abstract{Here goes the abstract.
+% } % end of abstract
 
 %% Keywords that describe your work. Will show as 'Index Terms' in journal
 %% please capitalize first letter and insert punctuation after last keyword
@@ -132,9 +132,10 @@
 %% the only exception to this rule is the \firstsection command
 \firstsection{Data Manipulation}
 \maketitle
-here we need to talk about a few things: construction of park.csv and time spent in attractions.
+The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements  within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
 
-Most of our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park.
+Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park:
+
 \section{Results}
 
 <<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
@@ -361,7 +362,7 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
 @
 
 \paragraph{Technical Details}
-Thanks to R~\cite{R}, and in particular the packages knitr~\cite{knitr-package, knitr-book1, knitr-chapter}, ggplot2~\cite{ggplot2}, dplyr~\cite{dplyr}, and XXX.
+Thanks to R~\cite{R}, and in particular the packages knitr~\cite{knitr-package, knitr-book1, knitr-chapter}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
