@@ -65,7 +65,7 @@
 
 %% Paper title.
 
-\title{Vandals on the move at DinoFun World}
+\title{On the move at DinoFun World}
 
 %% This is how authors are specified in the journal style
 
@@ -80,7 +80,7 @@
  }
 
 %other entries to be set up for journal
-\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Vandals on the move}
+\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: On the move}
 %\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
 
 %% Abstract section.
@@ -110,7 +110,7 @@
     \centering
     \includegraphics[width=.7\linewidth]{figure/vandals-1.pdf}
 
-   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that the vandalism takes place during this time. Two of the suspects check into the pavilion at 11:30 again and leave within seconds, only to check back into the pavilion at 11:46.}
+   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
   }
 
 %% Uncomment below to disable the manuscript note
@@ -266,39 +266,47 @@ ggplot(data=checkinsplus) +
 \caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday. Each park goer is a line, the length on the line and its vertical position indicate how much time was spend between checking into the ride and the first recorded move after that.}
 \end{figure}
 
-Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. 
+Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride (defined as the time between check-in and first recorded movement afterwards). Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. Just before 3pm on Sunday, a lot of these droplets occur across all the backed up thrill rides - maybe these people want to go to the (by now cancelled) Scott Jones show? DinoFun needs to work on their general announcement system!
 
 
 \subsection{Barcode of activities}
-We  define a group as a set of people who does the same rides together. We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
+We  define a group as a set of people who does the same rides together. 
+For that, we first need to identify when rides at each attraction occur. We are using the time of park-goers' first movement after a check-in event as a potential end time of a ride. For most rides, these end times show huge spikes, indicating the end of a ride. 
+
+We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
+
+
 
 For each of the days of the time frame we create a matrix of park goer id and ride id, that consists of 0s and 1s, with a  1 in cell (i,j) indicating that park goer i was on ride j. 
 We then use a binary metric to calculate pairwise distances between park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
 
 For example, if individual i took 23 rides, and j did 25 rides, and they did 20 rides of these together (i.e. in the same 'batch'), the ride based distance between them is (28 - 20)/28 = 0.29. 
 
-Using Ward's method for a hierarchical clustering based on these participant-participant distances, we get groups of park-goers on Friday, Saturday and Sunday. 
+Using Ward's method for a hierarchical clustering based on these participant-participant distances, we get identify groups of park-goers. 
 
-
+Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. 
 <<groupsdata, cache=TRUE, echo=FALSE>>=
 checkinsgr <- read.csv("data/checkinsgr.csv")
 checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
 checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 @
 
-<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=8.5, out.width='\\columnwidth'>>=
-qplot(x=Timestamp, xend=Timestamp+timespent, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
-  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) + 
-  geom_text(aes(x=Timestamp+timespent/2, y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1333734, 759761)), size=3.5) +
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) 
-
-#+   scale_x_continuous("Time of the day", breaks=8:23, 
-#                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12))))
+\begin{figure}
+<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=10, out.width='\\columnwidth', results='asis'>>=
+checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
+qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
+  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) + 
+  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1333734, 759761)), size=3.5) +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) +   
+  scale_x_continuous("Time of the day", breaks=8:23, 
+                    labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12))))
 
 # qplot(x=Timestamp, xend=Timestamp+timespent, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% sample(size=15, x=unique(checkinsgr$group))), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
 #     facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) 
 
 @
+\caption{\label{fig:groups}}
+\end{figure}
 
 
 \subsection{Vandals in Creighton Park}
@@ -337,7 +345,7 @@ ggplot(data=scott) +
                  data=vandals) + 
   ylab("Time spent in Creighton Pavilion (in minutes)") + 
 scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
-  ggtitle("Vandals in the Creighton Pavilion") + 
+  ggtitle("Vandals in the Creighton Pavilion?") + 
   geom_text(aes(x=(hour*60+min)/60, y=timespent/60, 
                 label=label), colour="#FC8D62", data=vandals2, hjust=-0.1, 
             vjust=1.4, alpha=1, size=3.75) + 
@@ -346,7 +354,7 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
   geom_text(aes(x=x, y=y, label="No admission to Creighton"), colour="grey65", size=3,
             data=data.frame(x=10.5, y=120, day="Fri")) + 
   geom_text(aes(x=x, y=y, label="Creighton Pavilion closed to the public"), colour="grey65", size=3,
-            data=data.frame(x=17.5, y=120, day="Sun")) + 
+            data=data.frame(x=17.5, y=100, day="Sun")) + 
   scale_colour_brewer("Location", palette="Set2") +
   theme(legend.justification=c(1,0), legend.position=c(1,.8)) + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) 
