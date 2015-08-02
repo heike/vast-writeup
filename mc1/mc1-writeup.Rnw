@@ -108,8 +108,7 @@
 %% Uncomment below to include a teaser figure.
    \teaser{
     \centering
-    \includegraphics[width=.7\linewidth]{figure/vandals-1.pdf}
-
+    \includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
    \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
   }
 
@@ -132,11 +131,48 @@
 %% the only exception to this rule is the \firstsection command
 \firstsection{Data Manipulation}
 \maketitle
+<<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+library(readr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(jpeg)
+library(ggmap)
+library(grid)
+@
+
+<<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
+  Timestamp = col_character()))
+sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
+  Timestamp = col_character()))
+sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
+  Timestamp = col_character()))
+move <- rbind(fri, sat, sun)
+rm(fri, sat, sun)
+
+move$Timestamp <- ymd_hms(move$Timestamp)
+move$day <- wday(move$Timestamp, label=TRUE)
+move$hour <- as.numeric(hour(move$Timestamp))
+move$min <- as.numeric(minute(move$Timestamp))
+move <- subset(move, !is.na(day))
+move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
+
+movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
+@
+
 The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements  within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
 
 Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park:
 
-\begin{figure}
+
+For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
+
+The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting. 
+
+\section{Results}
+
+\begin{figure}[hbt]
 <<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 rects <- data.frame(ymax=25000, xmin=20+12/60, xmax=24, ymin=-100, day="Fri")
 sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat"))
@@ -182,45 +218,7 @@ ggplot(data=subset(movebymin, type=="movement")) + theme_bw() +
 @
 \caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
 \end{figure}
-For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
-
-The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting. 
-
-\section{Results}
-
-<<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
-library(readr)
-library(lubridate)
-library(dplyr)
-library(ggplot2)
-library(jpeg)
-library(ggmap)
-library(grid)
-@
-
-<<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
-fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
-  Timestamp = col_character()))
-sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
-  Timestamp = col_character()))
-sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
-  Timestamp = col_character()))
-move <- rbind(fri, sat, sun)
-rm(fri, sat, sun)
-
-move$Timestamp <- ymd_hms(move$Timestamp)
-move$day <- wday(move$Timestamp, label=TRUE)
-move$hour <- as.numeric(hour(move$Timestamp))
-move$min <- as.numeric(minute(move$Timestamp))
-move <- subset(move, !is.na(day))
-move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
-
-movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
-@
-
 Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot: 
-
-
 
 (1) the Scott Jones show was held from 10 to 11 during all mornings and from 3 to 4 in the afternoons of Friday and Saturday. We can see this from the dip in movements (orange lines are average number of moves during one hour) during this time, and the spikes immediately at the end of the show (when a lot of people move out of the area).
 The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the concert space before 10 am for all days but before 3 pm only on Friday and Saturday.
@@ -279,14 +277,12 @@ We  define a group as a set of people who does the same rides together.
 
 We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
 
+For each of the days of the time frame we create a binary matrix of park goer id and ride id, where a  1 in cell (i,j) indicating that park goer i was on ride j. 
+We then use a binary metric to calculate pairwise distances between two park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
 
+For example, if individual k took 23 rides, and $\ell$ did 25 rides, and they did 20 rides of these together, the ride based distance between them is (28 - 20)/28 = 0.29. 
 
-For each of the days of the time frame we create a matrix of park goer id and ride id, that consists of 0s and 1s, with a  1 in cell (i,j) indicating that park goer i was on ride j. 
-We then use a binary metric to calculate pairwise distances between park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
-
-For example, if individual i took 23 rides, and j did 25 rides, and they did 20 rides of these together (i.e. in the same 'batch'), the ride based distance between them is (28 - 20)/28 = 0.29. 
-
-Using Ward's method for a hierarchical clustering based on these participant-participant distances, we get identify groups of park-goers. 
+Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers. 
 
 Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. 
 <<groupsdata, cache=TRUE, echo=FALSE>>=
@@ -309,7 +305,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
 #     facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) 
 
 @
-\caption{\label{fig:groups}}
+\caption{\label{fig:groups}Each group is uniquely identified by the activities they do together. For each individual coloured horizontal lines are drawn from the time of check-in to the time he/she leaves an attraction. Groups of individuals doing the same activities then result in vertical stripes. }
 \end{figure}
 
 
@@ -364,13 +360,12 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
   theme(plot.margin=unit(c(0,0,0,0), "cm")) 
 @
 
-\paragraph{Technical Details}
-Thanks to R~\cite{R}, and in particular the packages knitr~\cite{knitr-package, knitr-book1, knitr-chapter}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
+
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
-The authors wish to thank A, B, C. This work was supported in part by
-a grant from XYZ.}
+The authors wish to thank R Core~\cite{R}, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
+}
 
 \bibliographystyle{abbrv}
 %%use following if all content of bibtex file should be shown
