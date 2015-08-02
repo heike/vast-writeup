@@ -235,16 +235,18 @@ checkins$dmin <- with(checkins, hour*60+min)
 @
 
 \begin{figure}
-<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=14, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+<<timeinthrill, dependson='checkins', echo=FALSE, fig.width=12, fig.height=12, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 checkinsplus <- subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))
 checkinsplus$real <- TRUE
-thrilllimits <- data.frame(timespent=c(20,30,30)*60, day="Fri", 
-       Name=c("Atmosfear", "Keimosaur Big Spin", "Wrightiraptor Mountain"),
+thrilllimits <- data.frame(timespent=c(10,18,18)*60, day="Fri", 
+       Name=c("Atmosfear", "Keimosaurus Big Spin", "Wrightiraptor Mountain"),
        dmin=480, real=FALSE)
 
-checkinsplus <- rbind(checkinsplus[, c("day", "dmin", "timespent", "Name")], 
+checkinsplus <- rbind(checkinsplus[, c("day", "dmin", "timespent", "Name", "real")], 
 thrilllimits)
 checkinsplus$Namelabel <- gsub(" ", "\n", as.character(checkinsplus$Name))
+checkinsplus$Namelabel <- gsub("Keimosaurus\nBig\nSpin", "Keimosaurus\nBig Spin", as.character(checkinsplus$Namelabel))
+checkinsplus$Namelabel <- gsub("of\nthe", "of the", as.character(checkinsplus$Namelabel))
 
 ggplot(data=checkinsplus) +
   geom_errorbarh(aes(x=dmin/60, xmin=dmin/60,
@@ -310,7 +312,8 @@ vandals2 <- vandals %>% group_by(hm) %>% mutate(label=paste(id, sep=",", collaps
 scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
 @
 
-<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=6, eval=TRUE>>=
+% turn evaluation on when you first run the script.
+<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=5.25, eval=FALSE>>=
 firstrect <- data.frame(xmin=9.5, xmax=11.5, ymin=0, ymax=200, day=c("Fri", "Sat", "Sun"))
 secondrect <- data.frame(xmin=14.5, xmax=16.5, ymin=0, ymax=200, day=c("Fri", "Sat"))
 ggplot(data=scott) +
