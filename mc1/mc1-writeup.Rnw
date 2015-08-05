@@ -28,6 +28,8 @@
 \usepackage{mathptmx}
 \usepackage{graphicx}
 \usepackage{times}
+%\usepackage[font=small,skip=0pt]{caption}
+\usepackage[font=small,skip=5pt]{caption}
 
 %% We encourage the use of mathptmx for consistent usage of times font
 %% throughout the proceedings. However, if you encounter conflicts
@@ -292,7 +294,7 @@ checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 @
 
 \begin{figure}
-<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=10, out.width='\\columnwidth', results='asis'>>=
+<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=9.5, out.width='\\columnwidth', results='asis'>>=
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
 qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
   facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) + 
@@ -345,7 +347,7 @@ ggplot(data=scott) +
                  data=vandals) + 
   ylab("Time spent in Creighton Pavilion (in minutes)") + 
 scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
-  ggtitle("Vandals in the Creighton Pavilion?") + 
+  ggtitle("Vandals in the Creighton Pavilion") + 
   geom_text(aes(x=(hour*60+min)/60, y=timespent/60, 
                 label=label), colour="#FC8D62", data=vandals2, hjust=-0.1, 
             vjust=1.4, alpha=1, size=3.75) + 
@@ -356,7 +358,7 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
   geom_text(aes(x=x, y=y, label="Creighton Pavilion closed to the public"), colour="grey65", size=3,
             data=data.frame(x=17.5, y=100, day="Sun")) + 
   scale_colour_brewer("Location", palette="Set2") +
-  theme(legend.justification=c(1,0), legend.position=c(1,.8)) + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  theme(legend.justification=c(1,1), legend.position=c(1,1)) + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) 
 @
 
@@ -364,7 +366,7 @@ scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
-The authors wish to thank R Core~\cite{R}, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
+The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
 }
 
 \bibliographystyle{abbrv}
