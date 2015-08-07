@@ -110,7 +110,7 @@
 %% Uncomment below to include a teaser figure.
    \teaser{
     \centering
-    \includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
+    %\includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
    \caption{\label{fig:vandals} need a teaser }
   }
 
@@ -144,86 +144,65 @@ library(grid)
 @
 
 <<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
-fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
+fri <- read_csv("data/comm-data-Fri.csv", col_types = list(
   Timestamp = col_character()))
-sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
+sat <- read_csv("data/comm-data-Sat.csv", col_types = list(
   Timestamp = col_character()))
-sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
+sun <- read_csv("data/comm-data-Sun.csv", col_types = list(
   Timestamp = col_character()))
-move <- rbind(fri, sat, sun)
+com <- rbind(fri, sat, sun)
 rm(fri, sat, sun)
 
-move$Timestamp <- ymd_hms(move$Timestamp)
-move$day <- wday(move$Timestamp, label=TRUE)
-move$hour <- as.numeric(hour(move$Timestamp))
-move$min <- as.numeric(minute(move$Timestamp))
-move <- subset(move, !is.na(day))
-move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
+com$Timestamp <- ymd_hms(com$Timestamp)
+com$day <- wday(com$Timestamp, label=TRUE)
+com$day <- factor(com$day, levels=c("Fri", "Sat", "Sun"))
 
-movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
+com <- com %>% group_by(day) %>% mutate(
+  dsec = as.numeric(Timestamp-min(Timestamp))
+  )
+
+com$dmin <- com$dsec %/% 60
+com <- com %>% group_by(Timestamp, from) %>% mutate(recipients=n())
+
+dc <- subset(as.data.frame(xtabs(~dmin+location+day, data=com)), Freq > 0)
+dc$dmin <- as.numeric(as.character(dc$dmin))
 @
 
-The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements  within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
+<<omni-data, dependson='readdata', echo=FALSE, cache=TRUE>>=
+com$id <- "others"
+com$id[com$from=="1278894"] <- 1278894
+com$id[com$from=="839736"] <- 839736
 
-Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park:
+com$back <- "others"
+com$back[com$to=="839736"] <- 839736
+com$back[com$to=="1278894"] <- 1278894
 
+domni <- subset(data.frame(xtabs(~id  + location + dmin + day, data=com)), Freq > 0)
+domni$dmin <- as.numeric(as.character(domni$dmin))
+@
+During the even hours between noon and 8 pm the id 1278894 sends out messages at intervals of 5 minutes to 777, 1363, and 1561 different individuals on Friday, Saturday and Sunday, respectively. This corresponds to just over 25\% of all message recipients. 
+There are no other messages from this id besides the ones exactly at the top of every 5 minutes. Judging from the large number of messages and the relatively low percentage of recipients this looks like an opt-in service. 
+Interestingly, almost all of the recipients quickly respond to each of the messages sent by id 1278894. One potential scenario that we can think of is that the id is used for a (park-related?) trivia(?)  game to entertain park goers (while they wait in the very long lines).
 
-For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
-
-The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting. 
-
-\section{Results}
+Id 839736 on the other hand, has a lot more recipients: on Friday, Saturday, and Sunday, respectively, messages to 2527, 4462, and 5682 different recipients go out from this id. Every single one of these messages seems to be solicited by a previous message from the recipient to 839736, indicating that this id corresponds to some sort of information service provided by the park. On Friday and Saturday the park reaches about 85% of all recipients, and on Sunday almost 95%.
 
 \begin{figure}[hbt]
-<<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
-rects <- data.frame(ymax=25000, xmin=20+12/60, xmax=24, ymin=-100, day="Fri")
-sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat"))
-showrects <- data.frame(ymax=25000, xmin=c(10, 15, 10), xmax=c(11, 16, 11), ymin=-100, day=c("Sat", "Sat", "Sun"))
-#noshowrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day="Sun")
-
-scottjones <- movebymin %>% filter(type=="movement") %>% 
-  group_by(day, hour) %>% 
-  summarize(sc=mean(n))
-
-ggplot(data=subset(movebymin, type=="movement")) + theme_bw() + 
-  geom_rect(aes(ymax=25000, ymin=-100, xmin=10, xmax=11), 
-            fill="grey93", alpha=0.8) +
-#  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
-#            fill="grey90", alpha=0.5, data=rects) +
-  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
-            fill="grey90", alpha=0.8, data=sjrects) +
-  geom_text(aes(label="Scott Jones Show\nin concert space",
-           x = 10.5, y=16500,  day=day), angle = 90,
-           colour="grey70", size=4, data=rects) +
-  geom_text(aes(label="Scott Jones Show\nin concert space",
-           x = 15.5, y=16500,  day=day), angle = 90,
-           colour="grey70", size=4, data=rects) +
-#  geom_text(aes(label="show",
-#           x = (xmin+xmax)/2, y=5000,  day=day), 
-#           colour="grey70", size=5, data=showrects) +
-#  geom_text(aes(label="no show",
-#           x = (xmin+xmax)/2, y=5000,  day=day), 
-#           colour="grey70", size=5, data=noshowrects) +
-#  geom_text(aes(label="no movements\nrecorded\nin first version",
-#           x = (xmin+xmax)/2, y=12000,  day=day), angle = 90,
-#           colour="grey70", size=5, data=rects) +
-  facet_grid(day~.) + 
-  geom_point(aes(x=hour+min/60, y=n), alpha=0.5) + 
-  geom_segment(aes(y=sc, yend=sc, x=hour, xend=hour+1), 
-               data=subset(scottjones, hour %in% c(9:11, 14:16)),
-               colour="darkorange2", size=1.5, alpha=0.8) + 
-  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am"))) + 
-  xlab("Time of the day") + 
-  ylab("Number of movements by minute") + theme_bw() +
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
-  ggtitle("The second Scott Jones show on Sunday got cancelled")
+<<dependson='omni-data', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+qplot(dmin/60+8, Freq, data=subset(domni, id=="others"), colour=I("grey60"), facets=day~location) +
+  geom_point(aes(colour=id), subset(domni, id!="others")) + ggtitle("Messages sent from two special ids by minute") + 
+xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw() +
+  scale_colour_brewer(palette="Set2") + 
+  theme(legend.position="bottom", plot.margin=unit(c(0,0,0,0), units="cm"))
 @
-\caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
+\caption{\label{fig:overview} Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. 
+}
 \end{figure}
+
+
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
-The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
+The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
 }
 
 \bibliographystyle{abbrv}
