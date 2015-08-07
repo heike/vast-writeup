@@ -1,0 +1,234 @@
+\documentclass[journal]{vgtc}                % final (journal style)
+%\documentclass[review,journal]{vgtc}         % review (journal style)
+%\documentclass[widereview]{vgtc}             % wide-spaced review
+%\documentclass[preprint,journal]{vgtc}       % preprint (journal style)
+%\documentclass[electronic,journal]{vgtc}     % electronic version, journal
+
+%% Uncomment one of the lines above depending on where your paper is
+%% in the conference process. ``review'' and ``widereview'' are for review
+%% submission, ``preprint'' is for pre-publication, and the final version
+%% doesn't use a specific qualifier. Further, ``electronic'' includes
+%% hyperreferences for more convenient online viewing.
+
+%% Please use one of the ``review'' options in combination with the
+%% assigned online id (see below) ONLY if your paper uses a double blind
+%% review process. Some conferences, like IEEE Vis and InfoVis, have NOT
+%% in the past.
+
+%% Please note that the use of figures other than the optional teaser is not permitted on the first page
+%% of the journal version.  Figures should begin on the second page and be
+%% in CMYK or Grey scale format, otherwise, colour shifting may occur
+%% during the printing process.  Papers submitted with figures other than the optional teaser on the
+%% first page will be refused.
+
+%% These three lines bring in essential packages: ``mathptmx'' for Type 1
+%% typefaces, ``graphicx'' for inclusion of EPS figures. and ``times''
+%% for proper handling of the times font family.
+
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{times}
+%\usepackage[font=small,skip=0pt]{caption}
+\usepackage[font=small,skip=5pt]{caption}
+
+%% We encourage the use of mathptmx for consistent usage of times font
+%% throughout the proceedings. However, if you encounter conflicts
+%% with other math-related packages, you may want to disable it.
+
+%% This turns references into clickable hyperlinks.
+\usepackage[bookmarks,backref=true,linkcolor=black]{hyperref} %,colorlinks
+\hypersetup{
+  pdfauthor = {},
+  pdftitle = {},
+  pdfsubject = {},
+  pdfkeywords = {},
+  colorlinks=true,
+  linkcolor= black,
+  citecolor= black,
+  pageanchor=true,
+  urlcolor = black,
+  plainpages = false,
+  linktocpage
+}
+
+%% If you are submitting a paper to a conference for review with a double
+%% blind reviewing process, please replace the value ``0'' below with your
+%% OnlineID. Otherwise, you may safely leave it at ``0''.
+\onlineid{0}
+
+%% declare the category of your paper, only shown in review mode
+\vgtccategory{Research}
+
+%% allow for this line if you want the electronic option to work properly
+\vgtcinsertpkg
+
+%% In preprint mode you may define your own headline.
+%\preprinttext{To appear in IEEE Transactions on Visualization and Computer Graphics.}
+
+%% Paper title.
+
+\title{Communications at DinoFun World}
+
+%% This is how authors are specified in the journal style
+
+%% indicate IEEE Member or Student Member in form indicated below
+\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare and Vianey Leos-Barajas}
+\authorfooter{
+%% insert punctuation at end of each item
+\item
+ Heike Hofmann, Andee Kaplan, Eric Hare, and Vianey  Leos-Barajas are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey\}@iastate.edu.
+\item
+ Dianne Cook is with the Department of Econometrics and Business Statistics, Monash University. E-mail: dicook@monash.edu.
+ }
+
+%other entries to be set up for journal
+\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Communications}
+%\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
+
+% %% Abstract section.
+% \abstract{Here goes the abstract.
+% } % end of abstract
+
+%% Keywords that describe your work. Will show as 'Index Terms' in journal
+%% please capitalize first letter and insert punctuation after last keyword
+\keywords{Keywords that describe your work. Will show as 'Index Terms' in journal
+ please capitalize first letter and insert punctuation after last keyword}
+
+%% ACM Computing Classification System (CCS). 
+%% See <http://www.acm.org/class/1998/> for details.
+%% The ``\CCScat'' command takes four arguments.
+
+\CCScatlist{ % not used in journal version
+ \CCScat{K.6.1}{Management of Computing and Information Systems}%
+{Project and People Management}{Life Cycle};
+ \CCScat{K.7.m}{The Computing Profession}{Miscellaneous}{Ethics}
+}
+
+
+
+
+%% Uncomment below to include a teaser figure.
+   \teaser{
+    \centering
+    \includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
+   \caption{\label{fig:vandals} need a teaser }
+  }
+
+%% Uncomment below to disable the manuscript note
+%\renewcommand{\manuscriptnotetxt}{}
+
+%% Copyright space is enabled by default as required by guidelines.
+%% It is disabled by the 'review' option or via the following command:
+% \nocopyrightspace
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% START OF THE PAPER %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%% The ``\maketitle'' command must be the first command after the
+%% ``\begin{document}'' command. It prepares and prints the title block.
+
+%% the only exception to this rule is the \firstsection command
+\firstsection{Data Manipulation}
+\maketitle
+<<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+library(readr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(jpeg)
+library(ggmap)
+library(grid)
+@
+
+<<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
+fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
+  Timestamp = col_character()))
+sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
+  Timestamp = col_character()))
+sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
+  Timestamp = col_character()))
+move <- rbind(fri, sat, sun)
+rm(fri, sat, sun)
+
+move$Timestamp <- ymd_hms(move$Timestamp)
+move$day <- wday(move$Timestamp, label=TRUE)
+move$hour <- as.numeric(hour(move$Timestamp))
+move$min <- as.numeric(minute(move$Timestamp))
+move <- subset(move, !is.na(day))
+move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
+
+movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
+@
+
+The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements  within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
+
+Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park:
+
+
+For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
+
+The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting. 
+
+\section{Results}
+
+\begin{figure}[hbt]
+<<overview-moves, dependson='readdata', echo=FALSE, fig.width=9, fig.height=8, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
+rects <- data.frame(ymax=25000, xmin=20+12/60, xmax=24, ymin=-100, day="Fri")
+sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat"))
+showrects <- data.frame(ymax=25000, xmin=c(10, 15, 10), xmax=c(11, 16, 11), ymin=-100, day=c("Sat", "Sat", "Sun"))
+#noshowrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day="Sun")
+
+scottjones <- movebymin %>% filter(type=="movement") %>% 
+  group_by(day, hour) %>% 
+  summarize(sc=mean(n))
+
+ggplot(data=subset(movebymin, type=="movement")) + theme_bw() + 
+  geom_rect(aes(ymax=25000, ymin=-100, xmin=10, xmax=11), 
+            fill="grey93", alpha=0.8) +
+#  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+#            fill="grey90", alpha=0.5, data=rects) +
+  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+            fill="grey90", alpha=0.8, data=sjrects) +
+  geom_text(aes(label="Scott Jones Show\nin concert space",
+           x = 10.5, y=16500,  day=day), angle = 90,
+           colour="grey70", size=4, data=rects) +
+  geom_text(aes(label="Scott Jones Show\nin concert space",
+           x = 15.5, y=16500,  day=day), angle = 90,
+           colour="grey70", size=4, data=rects) +
+#  geom_text(aes(label="show",
+#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           colour="grey70", size=5, data=showrects) +
+#  geom_text(aes(label="no show",
+#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           colour="grey70", size=5, data=noshowrects) +
+#  geom_text(aes(label="no movements\nrecorded\nin first version",
+#           x = (xmin+xmax)/2, y=12000,  day=day), angle = 90,
+#           colour="grey70", size=5, data=rects) +
+  facet_grid(day~.) + 
+  geom_point(aes(x=hour+min/60, y=n), alpha=0.5) + 
+  geom_segment(aes(y=sc, yend=sc, x=hour, xend=hour+1), 
+               data=subset(scottjones, hour %in% c(9:11, 14:16)),
+               colour="darkorange2", size=1.5, alpha=0.8) + 
+  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am"))) + 
+  xlab("Time of the day") + 
+  ylab("Number of movements by minute") + theme_bw() +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
+  ggtitle("The second Scott Jones show on Sunday got cancelled")
+@
+\caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
+\end{figure}
+
+%% if specified like this the section will be committed in review mode
+\acknowledgments{
+The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, and dplyr~\cite{dplyr}.
+}
+
+\bibliographystyle{abbrv}
+%%use following if all content of bibtex file should be shown
+%\nocite{*}
+\bibliography{mc2}
+\end{document}
+
