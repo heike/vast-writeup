@@ -94,7 +94,7 @@
 \keywords{Keywords that describe your work. Will show as 'Index Terms' in journal
  please capitalize first letter and insert punctuation after last keyword}
 
-%% ACM Computing Classification System (CCS). 
+%% ACM Computing Classification System (CCS).
 %% See <http://www.acm.org/class/1998/> for details.
 %% The ``\CCScat'' command takes four arguments.
 
@@ -170,7 +170,7 @@ Our results are based on data augmented by more detailed location information an
 
 For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
 
-The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting. 
+The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting.
 
 \section{Results}
 
@@ -181,51 +181,51 @@ sjrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day=c("Fri", "Sat
 showrects <- data.frame(ymax=25000, xmin=c(10, 15, 10), xmax=c(11, 16, 11), ymin=-100, day=c("Sat", "Sat", "Sun"))
 #noshowrects <- data.frame(ymax=25000, xmin=15, xmax=16, ymin=-100, day="Sun")
 
-scottjones <- movebymin %>% filter(type=="movement") %>% 
-  group_by(day, hour) %>% 
+scottjones <- movebymin %>% filter(type=="movement") %>%
+  group_by(day, hour) %>%
   summarize(sc=mean(n))
 
-ggplot(data=subset(movebymin, type=="movement")) + theme_bw() + 
-  geom_rect(aes(ymax=25000, ymin=-100, xmin=10, xmax=11), 
+ggplot(data=subset(movebymin, type=="movement")) + theme_bw() +
+  geom_rect(aes(ymax=25000, ymin=-100, xmin=10, xmax=11),
             fill="grey93", alpha=0.8) +
-#  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+#  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax),
 #            fill="grey90", alpha=0.5, data=rects) +
-  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax), 
+  geom_rect(aes(ymax=ymax, ymin=ymin, xmin=xmin, xmax=xmax),
             fill="grey90", alpha=0.8, data=sjrects) +
-  geom_text(aes(label="Scott Jones Show\nin concert space",
+  geom_text(aes(label="Scott Jones Show\non Grinosaurus Stage",
            x = 10.5, y=16500,  day=day), angle = 90,
            colour="grey70", size=4, data=rects) +
-  geom_text(aes(label="Scott Jones Show\nin concert space",
+  geom_text(aes(label="Scott Jones Show\non Grinosaurus Stage",
            x = 15.5, y=16500,  day=day), angle = 90,
            colour="grey70", size=4, data=rects) +
 #  geom_text(aes(label="show",
-#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           x = (xmin+xmax)/2, y=5000,  day=day),
 #           colour="grey70", size=5, data=showrects) +
 #  geom_text(aes(label="no show",
-#           x = (xmin+xmax)/2, y=5000,  day=day), 
+#           x = (xmin+xmax)/2, y=5000,  day=day),
 #           colour="grey70", size=5, data=noshowrects) +
 #  geom_text(aes(label="no movements\nrecorded\nin first version",
 #           x = (xmin+xmax)/2, y=12000,  day=day), angle = 90,
 #           colour="grey70", size=5, data=rects) +
-  facet_grid(day~.) + 
-  geom_point(aes(x=hour+min/60, y=n), alpha=0.5) + 
-  geom_segment(aes(y=sc, yend=sc, x=hour, xend=hour+1), 
+  facet_grid(day~.) +
+  geom_point(aes(x=hour+min/60, y=n), alpha=0.5) +
+  geom_segment(aes(y=sc, yend=sc, x=hour, xend=hour+1),
                data=subset(scottjones, hour %in% c(9:11, 14:16)),
-               colour="darkorange2", size=1.5, alpha=0.8) + 
-  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am"))) + 
-  xlab("Time of the day") + 
+               colour="darkorange2", size=1.5, alpha=0.8) +
+  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am"))) +
+  xlab("Time of the day") +
   ylab("Number of movements by minute") + theme_bw() +
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) +
   ggtitle("The second Scott Jones show on Sunday got cancelled")
 @
 \caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
 \end{figure}
-Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot: 
+Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot:
 
 (1) the Scott Jones show was held from 10 to 11 during all mornings and from 3 to 4 in the afternoons of Friday and Saturday. We can see this from the dip in movements (orange lines are average number of moves during one hour) during this time, and the spikes immediately at the end of the show (when a lot of people move out of the area).
-The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the concert space before 10 am for all days but before 3 pm only on Friday and Saturday.
+The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the Grinosaurus Stage, where the Scott Jones show is hosted, before 10 am for all days but before 3 pm only on Friday and Saturday.
 
-(2) there is a spike in movements on Sunday at around 2:30 pm - judging from the movement pattern these are people on their way to the Scott Jones show who get turned away (because there are no check-ins to the concert space), see also figure 3.
+(2) there is a spike in movements on Sunday at around 2:30 pm - judging from the movement pattern these are people on their way to the Scott Jones show who get turned away (because there are no check-ins to the Grinosaurus Stage), see also figure 3.
 
 \subsection{Time in Rides}\label{sec:rides}
 
@@ -243,11 +243,11 @@ checkins$dmin <- with(checkins, hour*60+min)
 <<timeinthrill, dependson='checkins', echo=FALSE, fig.width=12, fig.height=12, out.width='\\columnwidth', cache=TRUE, results='asis'>>=
 checkinsplus <- subset(checkins, Type=="Thrill Rides" & day %in% c("Fri", "Sun"))
 checkinsplus$real <- TRUE
-thrilllimits <- data.frame(timespent=c(10,18,18)*60, day="Fri", 
+thrilllimits <- data.frame(timespent=c(10,18,18)*60, day="Fri",
        Name=c("Atmosfear", "Keimosaurus Big Spin", "Wrightiraptor Mountain"),
        dmin=480, real=FALSE)
 
-checkinsplus <- rbind(checkinsplus[, c("day", "dmin", "timespent", "Name", "real")], 
+checkinsplus <- rbind(checkinsplus[, c("day", "dmin", "timespent", "Name", "real")],
 thrilllimits)
 checkinsplus$Namelabel <- gsub(" ", "\n", as.character(checkinsplus$Name))
 checkinsplus$Namelabel <- gsub("Keimosaurus\nBig\nSpin", "Keimosaurus\nBig Spin", as.character(checkinsplus$Namelabel))
@@ -255,18 +255,18 @@ checkinsplus$Namelabel <- gsub("of\nthe", "of the", as.character(checkinsplus$Na
 
 ggplot(data=checkinsplus) +
   geom_errorbarh(aes(x=dmin/60, xmin=dmin/60,
-                     xmax=(dmin+timespent/60)/60, 
-                     y=timespent/60, colour=Name), alpha=1/2, size=2) + 
-  theme_bw() + facet_grid(Namelabel~day, scales="free", space="free") + 
-  theme(strip.text.y = element_text(angle = 0)) + 
-  scale_x_continuous("Time of the day", breaks=8:23, 
-                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
-  ggtitle("Time spent in Thrill Rides") + 
-  ylab("Time spent in Ride (includes waiting time)") + 
+                     xmax=(dmin+timespent/60)/60,
+                     y=timespent/60, colour=Name), alpha=1/2, size=2) +
+  theme_bw() + facet_grid(Namelabel~day, scales="free", space="free") +
+  theme(strip.text.y = element_text(angle = 0)) +
+  scale_x_continuous("Time of the day", breaks=8:23,
+                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) +
+  ggtitle("Time spent in Thrill Rides") +
+  ylab("Time spent in Ride (includes waiting time)") +
   scale_colour_brewer("Ride", palette="Paired") +
-  theme(legend.position="bottom") + 
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) + 
-  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2)) 
+  theme(legend.position="bottom") +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2))
 @
 \caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday. Each park goer is a line, the length on the line and its vertical position indicate how much time was spend in each ride.}
 \end{figure}
@@ -275,18 +275,18 @@ Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on
 
 
 \subsection{Barcode of activities}\label{sec:groups}
-We  define a group as a set of people who does the same rides together. 
+We  define a group as a set of people who does the same rides together.
 
 We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
 
-For each of the days of the time frame we create a binary matrix of park goer id and ride id, where a  1 in cell (i,j) indicating that park goer i was on ride j. 
+For each of the days of the time frame we create a binary matrix of park goer id and ride id, where a  1 in cell (i,j) indicating that park goer i was on ride j.
 We then use a binary metric to calculate pairwise distances between two park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
 
-For example, if individual k took 23 rides, and $\ell$ did 25 rides, and they did 20 rides of these together, the ride based distance between them is (28 - 20)/28 = 0.29. 
+For example, if individual k took 23 rides, and $\ell$ did 25 rides, and they did 20 rides of these together, the ride based distance between them is (28 - 20)/28 = 0.29.
 
-Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers. 
+Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers.
 
-Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. 
+Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday.
 <<groupsdata, cache=TRUE, echo=FALSE>>=
 checkinsgr <- read.csv("data/checkinsgr.csv")
 checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
@@ -296,15 +296,18 @@ checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 \begin{figure}
 <<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=9.5, out.width='\\columnwidth', results='asis'>>=
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
+checkinsgr$Name <- gsub("concert space", "Grinosaurus Stage", checkinsgr$Name)
+checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
+
 qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
-  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) + 
+  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
   geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1333734, 759761)), size=3.5) +
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) +   
-  scale_x_continuous("Time of the day", breaks=8:23, 
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) +
+  scale_x_continuous("Time of the day", breaks=8:23,
                     labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12))))
 
 # qplot(x=Timestamp, xend=Timestamp+timespent, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% sample(size=15, x=unique(checkinsgr$group))), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_brewer(palette="Paired") +
-#     facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) 
+#     facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Four Saturday groups: two groups of four and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2))
 
 @
 \caption{\label{fig:groups}Each group is uniquely identified by the activities they do together. For each individual coloured horizontal lines are drawn from the time of check-in to the time he/she leaves an attraction. Groups of individuals doing the same activities then result in vertical stripes. }
@@ -313,13 +316,13 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
 
 \subsection{Vandals in Creighton Park}
 
-Figure~\ref{fig:vandals} is constructed similarly to figure~\ref{fig:timeinthrill}, but focuses on the time that park goers spend in Creighton Pavilion, which hosts the Scott Jones exhibit, and at the Scott Jones show in the concert space. Besides the occasional individual, who spend almost all day in the concert space (security personnel should really check on these guys to see that they are OK), there are three suspicious individuals who check into the Creighton Pavilion and spend almost two hours all by themselves.
+Figure~\ref{fig:vandals} is constructed similarly to figure~\ref{fig:timeinthrill}, but focuses on the time that park goers spend in Creighton Pavilion, which hosts the Scott Jones exhibit, and at the Scott Jones show on the Grinosaurus Stage. Besides the occasional individual, who spend almost all day at the Grinosaurus Stage (security personnel should really check on these guys to see that they are OK), there are three suspicious individuals who check into the Creighton Pavilion and spend almost two hours all by themselves.
 
 <<vandalsdata, dependson='checkins', echo=FALSE, cache=TRUE>>=
 vandals <- subset(checkins, Type=="Shows & Entertainment" & timespent > 6000)
 vandals$hm <- with(vandals, paste(hour(Timestamp), minute(Timestamp), sep=":"))
 vandals2 <- vandals %>% group_by(hm) %>% mutate(label=paste(id, sep=",", collapse=", "))
-scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
+scott <- subset(checkins, Name %in% c("Grinosaurus Stage", "Creighton Pavilion"))
 @
 
 % turn evaluation on when you first run the script.
@@ -327,39 +330,39 @@ scott <- subset(checkins, Name %in% c("concert space", "Creighton Pavilion"))
 firstrect <- data.frame(xmin=9.5, xmax=11.5, ymin=0, ymax=200, day=c("Fri", "Sat", "Sun"))
 secondrect <- data.frame(xmin=14.5, xmax=16.5, ymin=0, ymax=200, day=c("Fri", "Sat"))
 ggplot(data=scott) +
-  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey90", 
+  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey90",
             data=firstrect) +
-  geom_rect(aes(xmin=xmin+0.5, xmax=xmax-0.5, ymin=ymin, ymax=ymax), fill="grey85", 
+  geom_rect(aes(xmin=xmin+0.5, xmax=xmax-0.5, ymin=ymin, ymax=ymax), fill="grey85",
             data=firstrect) +
-  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey90", 
+  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey90",
             data=secondrect) +
-  geom_rect(aes(xmin=xmin+0.5, xmax=xmax-0.5, ymin=ymin, ymax=ymax), fill="grey85", 
+  geom_rect(aes(xmin=xmin+0.5, xmax=xmax-0.5, ymin=ymin, ymax=ymax), fill="grey85",
             data=secondrect) +
-  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey95", 
+  geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill="grey95",
             data=data.frame(xmin=12, xmax=23, ymin=0, ymax=200, day="Sun")) +
   geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
-                     xmax=(hour*60+min+timespent/60)/60, 
-                     y=timespent/60, colour=Name), alpha=0.1, size=2) + 
-  theme_bw() + facet_grid(day~.) + 
+                     xmax=(hour*60+min+timespent/60)/60,
+                     y=timespent/60, colour=Name), alpha=0.1, size=2) +
+  theme_bw() + facet_grid(day~.) +
   geom_errorbarh(aes(x=(hour*60+min)/60, xmin=(hour*60+min)/60,
-                     xmax=(hour*60+min+timespent/60)/60, 
+                     xmax=(hour*60+min+timespent/60)/60,
                      y=timespent/60, colour=Name), size=2, alpha=1,
-                 data=vandals) + 
-  ylab("Time spent in Creighton Pavilion (in minutes)") + 
-scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) + 
-  ggtitle("Vandals in the Creighton Pavilion") + 
-  geom_text(aes(x=(hour*60+min)/60, y=timespent/60, 
-                label=label), colour="#FC8D62", data=vandals2, hjust=-0.1, 
-            vjust=1.4, alpha=1, size=3.75) + 
+                 data=vandals) +
+  ylab("Time spent in Creighton Pavilion (in minutes)") +
+scale_x_continuous("Time of the day", breaks=8:23, labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) +
+  ggtitle("Vandals in the Creighton Pavilion") +
+  geom_text(aes(x=(hour*60+min)/60, y=timespent/60,
+                label=label), colour="#FC8D62", data=vandals2, hjust=-0.1,
+            vjust=1.4, alpha=1, size=3.75) +
   geom_text(aes(x=x, y=y, label="Scott Jones\nshow"), colour="grey50", size=3,
-            data=data.frame(x=10.5, y=160, day="Fri")) + 
+            data=data.frame(x=10.5, y=160, day="Fri")) +
   geom_text(aes(x=x, y=y, label="No admission to Creighton"), colour="grey65", size=3,
-            data=data.frame(x=10.5, y=120, day="Fri")) + 
+            data=data.frame(x=10.5, y=120, day="Fri")) +
   geom_text(aes(x=x, y=y, label="Creighton Pavilion closed to the public"), colour="grey65", size=3,
-            data=data.frame(x=17.5, y=100, day="Sun")) + 
+            data=data.frame(x=17.5, y=100, day="Sun")) +
   scale_colour_brewer("Location", palette="Set2") +
   theme(legend.justification=c(1,1), legend.position=c(1,1)) + guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  theme(plot.margin=unit(c(0,0,0,0), "cm")) 
+  theme(plot.margin=unit(c(0,0,0,0), "cm"))
 @
 
 
