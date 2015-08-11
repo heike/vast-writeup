@@ -262,7 +262,7 @@ ggplot(data=checkinsplus) +
   theme(strip.text.y = element_text(angle = 0)) +
   scale_x_continuous("Time of the day", breaks=8:23,
                      labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) +
-  ggtitle("Time spent in Thrill Rides") +
+  ggtitle("Time spent in Thrill Rides: too many drop-outs!") +
   ylab("Time spent in Ride (includes waiting time)") +
   scale_colour_brewer("Ride", palette="Paired") +
   theme(legend.position="bottom") +
@@ -287,7 +287,7 @@ For example, if individual k took 23 rides, and $\ell$ did 25 rides, and they di
 
 Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers.
 
-Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday.
+Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. Just before 3 pm, Group 1819 seems to realize that taking the Wrightiraptor Mountain ride would make them late for the Scott Jones show, and they file back out after a short wait in the line.
 <<groupsdata, cache=TRUE, echo=FALSE>>=
 checkinsgr <- read.csv("data/checkinsgr.csv")
 checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
