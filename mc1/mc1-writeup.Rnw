@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
-   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in green) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
+   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in green) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hours, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
   }
 
 %% Uncomment below to disable the manuscript note
@@ -164,14 +164,13 @@ move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
 movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
 @
 
-The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements  within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
+The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park-goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
 
-Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park:
+Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park.
 
+For the time spent in rides (section~\ref{sec:rides}) we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
 
-For the time spent in rides (section~\ref{sec:rides})  we focus on just the check-in events enhanced by location-based auxiliary information given  on the DinoFun World website, which allows us to matchup each check-in with the corresponding attraction; its location, name and classification as Kiddie Ride, Thrill Ride or Ride for Everybody. We further derive the time that park-goers spend in an attraction as the time between check-in and first recorded movement afterwards.
-
-The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each is lasting.
+The time of park-goers' first movement after a check-in event is also important in identifying when rides at each attraction occur (see section~\ref{sec:groups}). We use the time of the first movement as a potential end time of a ride. For most rides, these end times show huge frequency spikes at regular intervals, indicating both the end of a ride and giving some indication how long each ride is lasting.
 
 \section{Results}
 
@@ -221,7 +220,7 @@ ggplot(data=subset(movebymin, type=="movement")) + theme_bw() +
 @
 \caption{\label{fig:movebymin} Number of movements in DinoFun World by minute. The Scott Jones show is responsible for a lot of the movement in the park over the weekend.}
 \end{figure}
-Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves  park goers make is charted for each minute of the day along  a horizontal time axis. We can learn a couple of things from this plot:
+Overall attendance at DinoFun World is characterized in figure~\ref{fig:movebymin}. The number of moves park-goers make is charted for each minute of the day along a horizontal time axis. We can learn a couple of things from this plot:
 
 (1) the Scott Jones show was held from 10 to 11 during all mornings and from 3 to 4 in the afternoons of Friday and Saturday. We can see this from the dip in movements (orange lines are average number of moves during one hour) during this time, and the spikes immediately at the end of the show (when a lot of people move out of the area).
 The second show on Sunday was cancelled: the dip in movements is missing on Sunday afternoon. This is also visible in figure 2, showing check-ins by area: people check into the Grinosaurus Stage, where the Scott Jones show is hosted, before 10 am for all days but before 3 pm only on Friday and Saturday.
@@ -269,10 +268,10 @@ ggplot(data=checkinsplus) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) +
   guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2))
 @
-\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday. Each park goer is a line, the length on the line and its vertical position indicate how much time was spend in each ride.}
+\caption{\label{fig:timeinthrill} Time spent in each of the Thrill Rides on Friday and Sunday. Each park-goer is a line, the length on the line and its vertical position indicate how much time was spend in each ride.}
 \end{figure}
 
-Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride. Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. Just before 3pm on Sunday, a lot of these droplets occur across all the backed up thrill rides - maybe these people want to go to the (by now cancelled) Scott Jones show? DinoFun needs to work on their general announcement system!
+Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride. Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park-goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. Just before 3pm on Sunday, a lot of these droplets occur across all the backed up thrill rides - maybe these people want to go to the (by now cancelled) Scott Jones show? DinoFun needs to work on their general announcement system!
 
 
 \subsection{Barcode of activities}\label{sec:groups}
@@ -280,10 +279,10 @@ We  define a group as a set of people who does the same rides together.
 
 We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
 
-For each of the days of the time frame we create a binary matrix of park goer id and ride id, where a  1 in cell (i,j) indicating that park goer i was on ride j.
-We then use a binary metric to calculate pairwise distances between two park goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
+For each of the days of the time frame we create a binary matrix of park-goer id and ride id, where a  1 in cell $(i,j)$ indicating that park-goer $i$ was on ride $j$.
+We then use a binary metric to calculate pairwise distances between two park-goers as the proportion of rides that only one of the two individuals took and the total number of rides that at least one of them did. This yields a distance between 0 and 1, where 0 means that all rides where done jointly, and 1 that none of the rides was done together.
 
-For example, if individual k took 23 rides, and $\ell$ did 25 rides, and they did 20 rides of these together, the ride based distance between them is (28 - 20)/28 = 0.29.
+For example, if individual $k$ took 23 rides, and $\ell$ did 25 rides, and they did 20 rides of these together, the ride based distance between them is (28 - 20)/28 = 0.29.
 
 Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers.
 
@@ -319,7 +318,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
 
 \subsection{Vandals in Creighton Park}
 
-Figure~\ref{fig:vandals} is constructed similarly to figure~\ref{fig:timeinthrill}, but focuses on the time that park goers spend in the Creighton Pavilion, which hosts the Scott Jones exhibit, and at the Scott Jones show on the Grinosaurus Stage. Besides a group of four individuals, who spend almost all day at the Grinosaurus Stage (security personnel should really check on these guys to see that they are OK), there are three suspicious individuals who check into the Creighton Pavilion and spend almost two hours all by themselves.
+Figure~\ref{fig:vandals} is constructed similarly to figure~\ref{fig:timeinthrill}, but focuses on the time that park-goers spend in the Creighton Pavilion, which hosts the Scott Jones exhibit, and at the Scott Jones show on the Grinosaurus Stage. Besides a group of four individuals, who spend almost all day at the Grinosaurus Stage (security personnel should really check on these guys to see that they are OK), there are three suspicious individuals who check into the Creighton Pavilion and spend almost two hours all by themselves.
 
 <<vandalsdata, dependson='checkins', echo=FALSE, cache=TRUE>>=
 vandals <- subset(checkins, Name=="Creighton Pavilion" & timespent > 6000)
