@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.65\linewidth]{figure/vandals-1.pdf}
-   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in orange) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
+   \caption{\label{fig:vandals} On Sunday, June 8 2014 a trio of suspects (marked in green) checks in to Creighton Pavilion at 9:01 am and stays there for more than 2 hour, in particular during the time that the Pavilion is closed to the public. What are they doing there? Our working theory is that some vandalism took place during this time, forcing park authorities to close the pavilion for the rest of the day. }
   }
 
 %% Uncomment below to disable the manuscript note
