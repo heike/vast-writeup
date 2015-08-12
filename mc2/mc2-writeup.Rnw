@@ -135,6 +135,11 @@
 %% the only exception to this rule is the \firstsection command
 \firstsection{Data Manipulation}
 \maketitle
+Some of our analysis is based on merging the communication information with the movements in the park. The common factor between the data sets is the timeline.
+
+
+
+\section{Results}
 <<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
 library(readr)
 library(lubridate)
@@ -159,11 +164,19 @@ com$Timestamp <- ymd_hms(com$Timestamp)
 com$day <- wday(com$Timestamp, label=TRUE)
 com$day <- factor(com$day, levels=c("Fri", "Sat", "Sun"))
 
+mins <- com %>% group_by(day) %>% summarize(open=min(Timestamp))
+minute(mins$open) <- 0
+second(mins$open) <- 0
+com <- merge(com, mins, by="day")
+
 com <- com %>% group_by(day) %>% mutate(
-  dsec = as.numeric(Timestamp-min(Timestamp))
+  dsec = as.numeric(Timestamp-open)
   )
 
-com$dmin <- com$dsec %/% 60
+com$hour <- hour(com$Timestamp)
+com$min <- minute(com$Timestamp)
+com$dmin <- with(com, hour*60+min)
+
 com <- com %>% group_by(Timestamp, from) %>% mutate(recipients=n())
 
 dc <- subset(as.data.frame(xtabs(~dmin+location+day, data=com)), Freq > 0)
@@ -182,6 +195,7 @@ com$back[com$to=="1278894"] <- 1278894
 domni <- data.frame(xtabs(~id  + location + dmin + day, data=com))
 domni$dmin <- as.numeric(as.character(domni$dmin))
 @
+\subsection{Two park systems in action}
 Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. From the pattern of messages sent and received we are able to identify these ids as the park's help line (839736) and the Cindysaurus trivia game (1278894), which is part of the DinoFun World app (how do we cite the auxiliary file?):
 
 During the even hours between noon and 8 pm questions are sent from the Cindysaurus trivia game (1278894) at five minute intervals  to just over 25\% of all park goers.
@@ -194,7 +208,7 @@ Id 839736 on the other hand, has a very different pattern. Every single one of t
 
 %\begin{figure}[hbt]
 <<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=TRUE>>=
-qplot(dmin/60+8, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
+qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
   facet_grid(facets=day~location, scale="free_y", space="free_y") +
   geom_line(aes(colour=id, group=id), size=0.15, alpha=0.5, subset(domni, id!="others")) +
   geom_point(aes(colour=id), subset(domni, id!="others")) +
@@ -209,7 +223,33 @@ qplot(dmin/60+8, Freq, data=subset(domni, id=="others"), geom=c("point", "line")
 
 %\end{figure}
 
+The spikes at 10am, 11am, 3pm and 4pm are all related to Scott Jones sightings, who makes his way from the East entrance entering  Kiddie Land to Grinosaurus Stage in the Coaster Alley.
+The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
 
+\subsection{A series of unfortunate events: who, when and where}
+
+Figure~\ref{fig:towhom} shows the number of messages originated from the Wet Land area by minute on Sunday between 11 am and 12:59 pm. This peak is made up of several peaks: a first one occurs around 11:30 - 11:45 and shows a slow increase in messages to other park-goers followed by a rapid decrease, that goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day
+
+\begin{figure}
+<<towhom, echo=FALSE, fig.width=7, fig.height=4.5, out.width='\\columnwidth'>>=
+com$back <- "other park-goers"
+com$back[com$to=="839736"] <- "Park help-line"
+com$back[com$to=="1278894"] <- "DinoFun App"
+com$back[com$to=="external"] <- "external"
+
+domni <- data.frame(xtabs(~back  + location + dmin + day, data=com))
+domni$dmin <- as.numeric(as.character(domni$dmin))
+domni$hour <- 8 + domni$dmin %/% 60
+
+qplot(dmin/60, y=Freq, data=subset(domni, day=="Sun" & location=="Wet Land" & hour %in% 11:12), geom=c("line"), facets=location~day, colour=back) +
+  geom_point(size=3) +
+xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw() +
+  scale_colour_brewer("Recipient", palette="Set2") + theme(legend.position="bottom") +
+  guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2)) +
+  scale_x_continuous(breaks=c(11, 11.5, 12, 12.5, 13), labels=c("11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "13:00 pm"))
+@
+\caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00 am and 12:59 pm.}
+\end{figure}
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
