@@ -207,7 +207,7 @@ Almost all of the recipients quickly respond to each of the questions (while the
 Id 839736 on the other hand, has a very different pattern. Every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, on Sunday this number spikes to 95\% of all park goers.
 
 %\begin{figure}[hbt]
-<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=TRUE>>=
+<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
 qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
   facet_grid(facets=day~location, scale="free_y", space="free_y") +
   geom_line(aes(colour=id, group=id), size=0.15, alpha=0.5, subset(domni, id!="others")) +
@@ -228,28 +228,60 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 p
 
 \subsection{A series of unfortunate events: who, when and where}
 
-Figure~\ref{fig:towhom} shows the number of messages originated from the Wet Land area by minute on Sunday between 11 am and 12:59 pm. This peak is made up of several peaks: a first one occurs around 11:30 - 11:45 and shows a slow increase in messages to other park-goers followed by a rapid decrease, that goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day
+Figure~\ref{fig:towhom} shows the number of messages originated from the Wet Land area by minute on Sunday between 11 am and 12:59 pm detailing the contributions of different groups to the peak in communitcation.
+A tight group of 38 park goers is responsible for a first peak in messages around 11:30 - 11:45. This peak is made up of messages going forth-and-back between this group. Its decrease  goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day.
+
+
 
 \begin{figure}
-<<towhom, echo=FALSE, fig.width=7, fig.height=4.5, out.width='\\columnwidth'>>=
+<<incrowd, echo=FALSE>>=
 com$back <- "other park-goers"
 com$back[com$to=="839736"] <- "Park help-line"
 com$back[com$to=="1278894"] <- "DinoFun App"
+
+peak <- subset(com, hour==11 & day=="Sun" & min >= 30 & min <= 44)
+# exclude park help line and app
+peak <- subset(peak, back %in% c("external", "other park-goers"))
+peak <- subset(peak, id == "others")
+
+dt <- table(peak$to)
+
+#dt1 <- as.data.frame(table(peak$from))
+#dt2 <- as.data.frame(table(nopeak$from))
+#quantile(dt1$Freq, probs=c(90:100)/100)
+#round(quantile(dt2$Freq, probs=c(90:100)/100))
+# 90 percentile is about 45
+
+x38 <- names(dt)[which(dt >= 250)]
+@
+<<towhom, dependson='incrowd', echo=FALSE, fig.width=7, fig.height=4.5, out.width='\\columnwidth'>>=
+com$back <- "other park-goers"
+com$back[com$to=="839736"] <- "Park help-line"
+com$back[com$to=="1278894"] <- "DinoFun App"
+com$back[com$to %in% x38] <- "38 chaps"
 com$back[com$to=="external"] <- "external"
 
 domni <- data.frame(xtabs(~back  + location + dmin + day, data=com))
 domni$dmin <- as.numeric(as.character(domni$dmin))
-domni$hour <- 8 + domni$dmin %/% 60
+domni$hour <- domni$dmin %/% 60
+
 
 qplot(dmin/60, y=Freq, data=subset(domni, day=="Sun" & location=="Wet Land" & hour %in% 11:12), geom=c("line"), facets=location~day, colour=back) +
   geom_point(size=3) +
 xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw() +
   scale_colour_brewer("Recipient", palette="Set2") + theme(legend.position="bottom") +
   guides(colour = guide_legend(override.aes = list(alpha = 1),  nrow=2)) +
-  scale_x_continuous(breaks=c(11, 11.5, 12, 12.5, 13), labels=c("11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "13:00 pm"))
+  scale_x_continuous(breaks=c(11, 11.5, 12, 12.5, 13), labels=c("11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "13:00 pm")) +
+  theme(plot.margin=unit(c(0,0,0,0), unit="cm")) +
+  ggtitle("Who was sending messages?")
 @
-\caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00 am and 12:59 pm.}
+\caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00~am and 12:59~pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
+
+<<x38, echo=FALSE>>=
+
+@
+
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
