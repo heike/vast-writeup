@@ -347,6 +347,11 @@ firstmove <- m38 %>% filter(hour==12) %>% group_by(id) %>% summarize(
 
 library(jpeg)
 park <- readJPEG("data/Park Map.jpg")
+library(ggmap)
+
+ggimage(park, fullpage = FALSE) + geom_point(aes(x=waitX*40.13, y=waitY*40.44), data=lastmove, pch=6) + geom_point(aes(x=waitX*40.13, y=waitY*40.44), data=firstmove, pch=5)
+  ggtitle("Chaps of group 2566 - disappear and re-appear")
+
 @
 
 %% if specified like this the section will be committed in review mode
