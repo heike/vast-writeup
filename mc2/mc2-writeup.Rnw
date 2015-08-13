@@ -323,6 +323,32 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 \caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
 \end{figure}
 
+<<x38-moves, echo=FALSE>>=
+sunmov <- read_csv("../mc1/data/park-movement-Sun.csv", col_types = list(
+  Timestamp = col_character()))
+sunmov$Timestamp <- ymd_hms(sunmov$Timestamp)
+sunmov$day <- wday(sunmov$Timestamp, label=TRUE)
+sunmov$hour <- as.numeric(hour(sunmov$Timestamp))
+sunmov$min <- as.numeric(minute(sunmov$Timestamp))
+
+m38 <- subset(sunmov, id %in% x38)
+@
+Interestingly, all 37 members of the group stop moving at around 9:44 until about noon. For every single one of them the last move is on tile 32, 33. Given that these cells are $5m \times 5m$ we can be pretty certain, that they found a hole in the park's sensor system and are on the loose.
+<<map, echo=FALSE>>=
+lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
+  when=max(Timestamp),
+  waitX=X[which.max(Timestamp)],
+  waitY=Y[which.max(Timestamp)])
+
+firstmove <- m38 %>% filter(hour==12) %>% group_by(id) %>% summarize(
+   when=min(Timestamp),
+   waitX=X[which.min(Timestamp)],
+   waitY=Y[which.min(Timestamp)])
+
+library(jpeg)
+park <- readJPEG("data/Park Map.jpg")
+@
+
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
 The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
