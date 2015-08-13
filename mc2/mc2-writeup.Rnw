@@ -323,18 +323,20 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 \caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
 \end{figure}
 
-<<x38-moves, echo=FALSE>>=
+<<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
 sunmov <- read_csv("../mc1/data/park-movement-Sun.csv", col_types = list(
   Timestamp = col_character()))
 sunmov$Timestamp <- ymd_hms(sunmov$Timestamp)
 sunmov$day <- wday(sunmov$Timestamp, label=TRUE)
 sunmov$hour <- as.numeric(hour(sunmov$Timestamp))
 sunmov$min <- as.numeric(minute(sunmov$Timestamp))
-
+sensors <- unique(sunmov[,c("X", "Y")])
 m38 <- subset(sunmov, id %in% x38)
 @
 Interestingly, all 37 members of the group stop moving at around 9:44 until about noon. For every single one of them the last move is on tile 32, 33. Given that these cells are $5m \times 5m$ we can be pretty certain, that they found a hole in the park's sensor system and are on the loose.
-<<map, echo=FALSE>>=
+
+\begin{figure}
+<<map, echo=FALSE, fig.width=5, fig.height=5, out.width='\\columnwidth', message=FALSE, warning=FALSE>>=
 lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
   when=max(Timestamp),
   waitX=X[which.max(Timestamp)],
@@ -349,11 +351,17 @@ library(jpeg)
 park <- readJPEG("data/Park Map.jpg")
 library(ggmap)
 
-ggimage(park, fullpage = FALSE) + geom_point(aes(x=waitX*40.13, y=waitY*40.44), data=lastmove, pch=6) + geom_point(aes(x=waitX*40.13, y=waitY*40.44), data=firstmove, pch=5)
-  ggtitle("Chaps of group 2566 - disappear and re-appear")
+ggimage(park, fullpage = FALSE) +
+  geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", colour="#FFFFEB", alpha=0.5) +
+  theme(axis.text = element_blank(), axis.ticks=element_blank(),
+        axis.title = element_blank(),
+        plot.margin=unit(c(0,0,-1,-1), "line")) +
+    geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=lastmove, colour="red") + geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=firstmove, colour="orange")
+  ggtitle("The chaps of group 2566 - disappear and re-appear")
 
 @
-
+\caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times $5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
+\end{figure}
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
 The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
