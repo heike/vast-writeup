@@ -148,6 +148,7 @@ library(ggplot2)
 library(jpeg)
 library(ggmap)
 library(grid)
+library(RColorBrewer)
 @
 
 <<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
@@ -229,7 +230,7 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 p
 \subsection{A series of unfortunate events: who, when and where}
 
 Figure~\ref{fig:towhom} shows the number of messages originated from the Wet Land area by minute on Sunday between 11 am and 12:59 pm detailing the contributions of different groups to the peak in communitcation.
-A tight group of 38 park goers is responsible for a first peak in messages around 11:30 - 11:45. This peak is made up of messages going forth-and-back between this group. Its decrease  goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day.
+A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45. This peak is made up of messages going forth-and-back between this group. Its decrease  goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day.
 
 
 
@@ -258,7 +259,7 @@ x38 <- names(dt)[which(dt >= 250)]
 com$back <- "other park-goers"
 com$back[com$to=="839736"] <- "Park help-line"
 com$back[com$to=="1278894"] <- "DinoFun App"
-com$back[com$to %in% x38] <- "38 chaps"
+com$back[com$to %in% x38] <- "37 chaps"
 com$back[com$to=="external"] <- "external"
 
 domni <- data.frame(xtabs(~back  + location + dmin + day, data=com))
@@ -278,10 +279,49 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
 \caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00~am and 12:59~pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
 
-<<x38, echo=FALSE>>=
+\begin{figure}
+<<x38, echo=FALSE, fig.width=6.5, fig.height=3.5, out.width='\\columnwidth'>>=
+checkinsgr <- read.csv("../mc1/data/checkinsgr.csv")
+checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
+checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
+
+cols <- brewer.pal(10, "Paired")
+
+checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
+checkinsgr$Name <- gsub("concert space", "Grinosaurus Stage", checkinsgr$Name)
+checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
+
+qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,7,8,1,6)]) +
+  ggtitle("Rides taken by the 37 guys from group 2566") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
+  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1038892)), size=3.5) +
+  theme(plot.margin=unit(c(0,0,0,0), "cm")) +
+  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
+                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
 
 @
+\caption{\label{fig:x38} What is group 2566 up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - what else did they do?  }
+\end{figure}
 
+\begin{figure}
+<<messages, echo=FALSE, fig.width=6.5, fig.height=3.5, out.width='\\columnwidth'>>=
+s38 <- subset(com, from %in% x38)
+s38$from <- factor(s38$from)
+
+ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
+  geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5) +
+  geom_point(size=1.5) +
+  theme_bw() +
+  ggtitle("Messages sent by the 37 guys from group 2566") +
+  scale_colour_brewer("Recipient", palette="Set2") +
+  theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
+  xlab("Time of day") +
+  ylab("") +
+  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
+                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
+
+@
+\caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
+\end{figure}
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
