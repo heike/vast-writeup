@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.75\linewidth]{figure/omni-1.pdf}
-\caption{\label{fig:overview} Number of messages sent from the park for each minute of the day. Two park systems in action: the park's help line gets very busy twice on Sunday, once at 11 am, and once at 3 pm (shown in orange). Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opt to get the app. Cell phones likely have to be turned off in the Scott Jones show, accounting for the dip in messages from 3-4 pm on Friday and Saturday. The flare-ups in the number of messages sent from the Coaster Alley and the Kiddie Land are related to Scott Jones sightings throughout the park, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
+\caption{\label{fig:overview} Number of messages sent from the park for each minute of the day. Two park systems in action: the park's help line gets very busy twice on Sunday, once at 11 am, and once at 3 pm (shown in orange). Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opt to get the app. Cell phones likely have to be turned off in the Scott Jones show, accounting for the dip in messages from 3-4 pm on Friday and Saturday. The flare-ups in the number of messages sent from  Coaster Alley are related to Scott Jones sightings throughout the park, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
 }
 
   }
@@ -208,7 +208,7 @@ Almost all of the recipients quickly respond to each of the questions (while the
 Id 839736 on the other hand, has a very different pattern. Every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, on Sunday this number spikes to 95\% of all park goers.
 
 %\begin{figure}[hbt]
-<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
+<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=TRUE>>=
 qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
   facet_grid(facets=day~location, scale="free_y", space="free_y") +
   geom_line(aes(colour=id, group=id), size=0.15, alpha=0.5, subset(domni, id!="others")) +
@@ -216,7 +216,7 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
   ggtitle("Two park systems in action") +
   ylab("Number of messages sent by minute") + theme_bw() +
   scale_colour_brewer("sender's id", palette="Set2") +
-  theme(legend.justification=c(1,1), legend.position=c(0.4,0.355), plot.margin=unit(c(0,0,0,0), units="cm")) +
+  theme(legend.justification=c(1,1), legend.position=c(0.4,0.32.5), plot.margin=unit(c(0,0,0,0), units="cm")) +
   scale_x_continuous("Time of day", breaks=c(8,12,16,20), labels=c("8 am", "12 pm", "4 pm", "8 pm"))
 #+
 #  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am")))
@@ -280,7 +280,28 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
 \end{figure}
 
 \begin{figure}
-<<x38, echo=FALSE, fig.width=6.5, fig.height=3.5, out.width='\\columnwidth'>>=
+<<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='\\columnwidth'>>=
+s38 <- subset(com, from %in% x38)
+s38$from <- factor(s38$from)
+
+ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
+  geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5, position = position_jitter(height = .5)) +
+  geom_point(size=1.5) +
+  theme_bw() +
+  ggtitle("Messages sent by the 37 guys from group 2566") +
+  scale_colour_brewer("Recipient", palette="Set2") +
+  theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
+  xlab("Time of day") +
+  ylab("") +
+  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
+                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
+
+@
+\caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
+\end{figure}
+
+\begin{figure}
+<<x38, echo=FALSE, fig.width=7, fig.height=4, out.width='\\columnwidth'>>=
 checkinsgr <- read.csv("../mc1/data/checkinsgr.csv")
 checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
 checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
@@ -302,27 +323,6 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
 \caption{\label{fig:x38} What is group 2566 up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - what else did they do?  }
 \end{figure}
 
-\begin{figure}
-<<messages, echo=FALSE, fig.width=6.5, fig.height=3.5, out.width='\\columnwidth'>>=
-s38 <- subset(com, from %in% x38)
-s38$from <- factor(s38$from)
-
-ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
-  geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5) +
-  geom_point(size=1.5) +
-  theme_bw() +
-  ggtitle("Messages sent by the 37 guys from group 2566") +
-  scale_colour_brewer("Recipient", palette="Set2") +
-  theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
-  xlab("Time of day") +
-  ylab("") +
-  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
-                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
-
-@
-\caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
-\end{figure}
-
 <<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
 sunmov <- read_csv("../mc1/data/park-movement-Sun.csv", col_types = list(
   Timestamp = col_character()))
@@ -333,15 +333,17 @@ sunmov$min <- as.numeric(minute(sunmov$Timestamp))
 sensors <- unique(sunmov[,c("X", "Y")])
 m38 <- subset(sunmov, id %in% x38)
 @
-Interestingly, all 37 members of the group stop moving at around 9:44 until about noon. For every single one of them the last move is on tile 32, 33. Given that these cells are $5m \times 5m$ we can be pretty certain, that they found a hole in the park's sensor system and are on the loose.
+Interestingly, the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
+They are either standing perfectly still in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion (see figure~\ref{fig:map}).
 
 \begin{figure}
+\centering
 <<map-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
 library(jpeg)
 park <- readJPEG("data/Park Map.jpg")
 library(ggmap)
 @
-<<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='\\columnwidth', message=FALSE, warning=FALSE>>=
+<<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='.8\\columnwidth', message=FALSE, warning=FALSE>>=
 lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
   when=max(Timestamp),
   waitX=X[which.max(Timestamp)],
@@ -362,7 +364,7 @@ ggimage(park, fullpage = FALSE) +
   ggtitle("The chaps of group 2566 disappear and re-appear")
 
 @
-\caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times 5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
+\caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times 5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or -- much more likely -- they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
 \end{figure}
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
