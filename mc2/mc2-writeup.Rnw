@@ -208,7 +208,7 @@ Almost all of the recipients quickly respond to each of the questions (while the
 Id 839736 on the other hand, has a very different pattern. Every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, on Sunday this number spikes to 95\% of all park goers.
 
 %\begin{figure}[hbt]
-<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=TRUE>>=
+<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
 qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
   facet_grid(facets=day~location, scale="free_y", space="free_y") +
   geom_line(aes(colour=id, group=id), size=0.15, alpha=0.5, subset(domni, id!="others")) +
@@ -216,7 +216,7 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
   ggtitle("Two park systems in action") +
   ylab("Number of messages sent by minute") + theme_bw() +
   scale_colour_brewer("sender's id", palette="Set2") +
-  theme(legend.justification=c(1,1), legend.position=c(0.4,0.32.5), plot.margin=unit(c(0,0,0,0), units="cm")) +
+  theme(legend.justification=c(1,1), legend.position=c(0.4,0.325), plot.margin=unit(c(0,0,0,0), units="cm")) +
   scale_x_continuous("Time of day", breaks=c(8,12,16,20), labels=c("8 am", "12 pm", "4 pm", "8 pm"))
 #+
 #  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am")))
