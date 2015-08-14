@@ -72,11 +72,11 @@
 %% This is how authors are specified in the journal style
 
 %% indicate IEEE Member or Student Member in form indicated below
-\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare and Vianey Leos-Barajas}
+\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, Carson Sievert and Samantha Tyner}
 \authorfooter{
 %% insert punctuation at end of each item
 \item
- Heike Hofmann, Andee Kaplan, Eric Hare, and Vianey  Leos-Barajas are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey\}@iastate.edu.
+ Heike Hofmann, Andee Kaplan, Eric Hare, Vianey  Leos-Barajas, Carson Sievert and Samatha Tyner are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey, csievert, sctyner\}@iastate.edu.
 \item
  Dianne Cook is with the Department of Econometrics and Business Statistics, Monash University. E-mail: dicook@monash.edu.
  }
