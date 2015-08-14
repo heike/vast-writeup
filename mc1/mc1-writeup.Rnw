@@ -164,7 +164,7 @@ move$day <- factor(move$day, levels=c("Fri", "Sat", "Sun"))
 movebymin <- move %>% group_by(day, hour, min, type) %>% summarize(n=n())
 @
 
-The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park-goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements within $5m \times 5m$ grid cells measured by sensors along the park's pathways.
+The data set under consideration comes from the VAST 2015 Mini-Challenge~1 consisting of movements of park-goers at DinoFun World, a fictitious medium-sized amusement park, for the weekend of June 8-10, 2014. Each record in the data consists of an identifier, timestamp, X-Y location, and the type of movement, distinguishing check-ins into an attraction and movements within 5m $\times$ 5m grid cells measured by sensors along the park's pathways.
 
 Our results are based on data augmented by more detailed location information and timelines derived from individuals' movements through the park.
 

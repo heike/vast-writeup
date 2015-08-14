@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.75\linewidth]{figure/omni-1.pdf}
-\caption{\label{fig:overview} Number of messages sent from the park for each minute of the day. Two park systems in action: the park's help line gets very busy twice on Sunday, once at 11 am, and once at 3 pm (shown in orange). Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opt to get the app. Cell phones likely have to be turned off in the Scott Jones show, accounting for the dip in messages from 3-4 pm on Friday and Saturday. The flare-ups in the number of messages sent from  Coaster Alley are related to Scott Jones sightings throughout the park, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
+\caption{\label{fig:overview} Number of messages sent from the park for each minute of the day. Two park systems in action: the park's help line gets very busy twice on Sunday, once at 11 am, and once at 3 pm (shown in orange). Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opt to get the app. Cell phones likely have to be turned off in the Scott Jones show, accounting for the dip in messages from 3-4 pm on Friday and Saturday. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
 }
 
   }
@@ -385,7 +385,7 @@ They are either standing perfectly still in the same 5m x 5m cell (tile 32, 33),
 \centering
 <<map-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
 library(jpeg)
-park <- readJPEG("data/Park Map.jpg")
+park <- readJPEG("../extra/Park Map.jpg")
 library(ggmap)
 @
 <<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='.8\\columnwidth', message=FALSE, warning=FALSE>>=
@@ -415,6 +415,71 @@ ggimage(park, fullpage = FALSE) +
 \acknowledgments{
 The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
 }
+
+
+%' <<messages-at-eleven, echo=FALSE>>=
+%' coaster <- subset(com, day=="Sun" & dmin %in% 660:661)
+%' 
+%' coasterplus <- alignTime(sunmov, coaster)
+%' coasterplus$min <- minute(coasterplus$Timestamp)
+%' coasterplus$hour <- hour(coasterplus$Timestamp)
+%' coasterplus$dmin <- with(coasterplus, hour*60+min)
+%' coasterplus$second <- second(coasterplus$Timestamp)
+%' coasterplus$dsec <- with(coasterplus, (hour*60+min)*60+second)
+%' coasterplus$ddsec <- coasterplus$dsec %/% 15
+%' 
+%' msgs <- coasterplus %>% group_by(X,Y, ddsec) %>% summarize(n=n())
+%' qplot(X,Y, size=n, data=msgs) + facet_wrap(~ddsec, nrow=2) + 
+%'   theme(legend.position="bottom")
+%' 
+%' alignTime <- function(moves, comms) {
+%'   movfri <- sunmov[,c("Timestamp", "id", "type", "X", "Y")]
+%'   comfri <- coaster[, c("Timestamp", "from", "to", "location")]
+%'   movfri$to <- NA
+%'   movfri$location <- NA
+%'   
+%'   names(comfri)[2] <- "id"
+%'   comfri$X <- NA
+%'   comfri$Y <- NA
+%'   comfri$type <- "send"
+%'   
+%'   allfri <- rbind(movfri, comfri)
+%'   allfri <- allfri[order(allfri$id, allfri$Timestamp),]
+%'   allfri$day <- wday(allfri$Timestamp, label=TRUE)
+%'   allfri <- allfri %>% group_by(day) %>% mutate(
+%'     dsec = as.numeric(Timestamp-min(Timestamp))
+%'   )
+%'   allfri$cid <- paste(allfri$id, allfri$dsec)
+%'   
+%'   allfri$X2 <- allfri$X
+%'   allfri$Y2 <- allfri$Y
+%'   idx <- which(is.na(allfri$X2))
+%'   # substitute all locations for messages with 50 or fewer recipients
+%'   for (i in 1:50) {
+%'     allfri$X2[idx] <- allfri$X2[idx-1]
+%'     allfri$Y2[idx] <- allfri$Y2[idx-1]
+%'     
+%'   }
+%'   
+%'   # different approach: identify all runs, substitute the location with the minimum-1 of the run
+%'   didx <- diff(idx)
+%'   leads <- c(0, which(didx > 1)) + 1
+%'   ends <- c(which(didx > 1), length(idx))
+%'   
+%'   perc <- 0
+%'   allfri$X3 <- allfri$X2
+%'   allfri$Y3 <- allfri$Y2
+%'   for (i in 1:length(leads)) {
+%'     allfri$X3[idx[leads[i]]:idx[ends[i]]] <- allfri$X2[idx[leads[i]]-1]
+%'     allfri$Y3[idx[leads[i]]:idx[ends[i]]] <- allfri$Y2[idx[leads[i]]-1]
+%'   }
+%'   
+%'   allfri$X <- allfri$X3
+%'   allfri$Y <- allfri$Y3
+%'   subset(allfri, type=="send")
+%' }
+%' 
+%' @
 
 \bibliographystyle{abbrv}
 %%use following if all content of bibtex file should be shown
