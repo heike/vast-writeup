@@ -233,11 +233,12 @@ moves <- subset(moveplus, type == "movement")
 # quantile(moves$timespent, probs=(990:1000)/1000, na.rm=TRUE)
 breaks <- subset(moves, timespent > 30)
 breaks$timespent <- breaks$timespent/60
+
 parkX <- read.csv("data/park-xtd.csv")
 breaks <- merge(subset(breaks, timespent > 10), parkX, by=c("X", "Y"), all=T)
 breaks$dmin <- with(breaks, hour*60+min)
 
-
+# in case you need a map:
 # library(jpeg)
 # park <- readJPEG("../mc2/data/Park Map.jpg")
 # library(ggmap)
@@ -299,36 +300,50 @@ For example, if individual $k$ took 23 rides, and $\ell$ did 25 rides, and they 
 Using Ward's method for a hierarchical clustering based on these participant-participant distances, we identify groups of park-goers.
 
 Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. Just before 3 pm, Group 1819 seems to realize that taking the Wrightiraptor Mountain ride would make them late for the Scott Jones show, and they file back out after a short wait in the line.
-<<groupsdata, cache=TRUE, echo=FALSE>>=
-checkinsgr <- read.csv("data/checkinsgr.csv")
-checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
-checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
-@
 
 \begin{figure}
-<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=9.5, out.width='\\columnwidth', results='asis', messages=FALSE>>=
-cols <- brewer.pal(10, "Paired")
-
+<<groupsdata, cache=TRUE, echo=FALSE>>=
+groups <- read.csv("data/groups.csv")
+checkinsgr <- merge(checkins, groups, by=c("id", "day"))
+# checkinsgr <- read.csv("data/checkinsgr.csv")
+# checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
+checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
+# 
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
-checkinsgr$Name <- gsub("concert space", "Grinosaurus Stage", checkinsgr$Name)
-checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
 
-breaks <- merge(breaks, unique(checkinsgr[, c("id", "group", "day")]), by=c("id", "day"), all.x=TRUE)
+breaks <- merge(breaks, groups, by=c("id", "day"), all.x=TRUE)
 breaks$id <- factor(breaks$id)
 breaks$dmin <- with(breaks, (hour*60+min)/60)
+@
 
 
-qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sat" & group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,7,8,1,6)]) +
-  facet_grid(facets=group~.,space="free", scales="free_y") + ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
-  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1333734, 759761)), size=3.5) +
+<<groups, echo=FALSE, dependson='groupsdata', fig.width=10, fig.height=9.5, out.width='\\columnwidth'>>=
+cols <- brewer.pal(10, "Paired")
+
+qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, 
+      data=subset(checkinsgr, day=="Sat" & 
+                    group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)), 
+      colour=Type,geom="segment", size=I(3)) +  
+  theme_bw() + scale_colour_manual(values=cols[c(3,4,7,8,1,6)]) +
+  facet_grid(facets=group~.,space="free", scales="free_y") + 
+  ggtitle("Some Saturday groups: a couple of random groups and the two largest groups") + 
+  theme(legend.position="bottom") + ylab("") + 
+  guides(colour = guide_legend(nrow=2)) +
+  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), 
+            colour="grey30", angle=90, size=3.5, 
+            data=subset(checkinsgr, id %in% c(1333734, 759761))) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) +
   scale_x_continuous("Time of the day", breaks=8:23,
-                    labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12))))+
-geom_segment(aes(x=dmin, xend=dmin+timespent/60, y=id, yend=id), data=subset(breaks, timespent > 10 & day=="Sat" & group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)),
-colour="#FFFFCC", size=I(3)) +
-  geom_text(aes(x=dmin+timespent/120, y=id, label=Name), colour="grey30", angle=90, data=subset(breaks, timespent > 10 & id %in% c(1333734, 759761)), size=3.5)
+                    labels=paste(c(8:12,1:11), c(rep("am", 4), rep("pm", 12)))) +
+  geom_segment(aes(x=dmin, xend=dmin+timespent/60, y=id, yend=id), 
+               data=subset(breaks, timespent > 10 & day=="Sat" & 
+                             group %in% c(483, 1185, 1323, 1705, 1566, 1819, 1838)),
+               colour="#FFFFCC", size=I(3)) +
+  geom_text(aes(x=dmin+timespent/(2*60), y=id, label=Name), 
+            colour="grey30", angle=90, size=3.5, 
+            data=subset(breaks, id %in% c(1333734, 759761)))
 @
-\caption{\label{fig:groups}Each group is uniquely identified by the activities they do together. For each individual coloured horizontal lines are drawn from the time of check-in to the time he/she leaves an attraction. Groups of individuals doing the same activities then result in vertical stripes. }
+\caption{\label{fig:groups}Each group is uniquely identified by the activities they do together. For each individual coloured horizontal lines are drawn from the time of check-in to the time he/she leaves an attraction. Groups of individuals doing the same activities then result in vertical stripes. Stripes with light yellow backgrounds correspond to breaks from the rides, that don't require checking in.}
 \end{figure}
 
 
