@@ -353,13 +353,13 @@ checkinsgr <- merge(checkinsgr, parkX, by=c("X", "Y"), all=T)
 #checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
 #checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 
-cols <- brewer.pal(10, "Paired")
+cols <- brewer.pal(12, "Paired")
 
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
 # checkinsgr$Name <- gsub("concert space", "Grinosaurus Stage", checkinsgr$Name)
 # checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
 
-qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,7,8,1,6)]) +
+qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,11, 7,1,8)]) +
   ggtitle("Activities of the 37 guys from group 2566") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
   geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1038892)), size=3.5) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) +
@@ -368,7 +368,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
   geom_segment(aes(x=dmin, xend=dmin+timespent/60, y=id, yend=id), 
                data=subset(breaks, timespent > 10 & day=="Sun" & 
                              group %in% c(2566)),
-               colour="#FFFFCC", size=I(3)) +
+               colour="#DDDDDD", size=I(3)) +
   geom_text(aes(x=dmin+timespent/(2*60), y=id, label=Name), 
             colour="grey30", angle=90, size=3.5, 
             data=subset(breaks, id %in% c(1038892)))
