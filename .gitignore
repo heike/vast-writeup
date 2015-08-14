@@ -1,6 +1,8 @@
 mc1/cache
+mc2/cache
 *.log
 *.bbl
 *.gz
 *.tex
 mc1/data/park-movement*
+mc2/data/comm-data*
