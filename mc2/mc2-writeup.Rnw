@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.75\linewidth]{figure/omni-1.pdf}
-\caption{\label{fig:overview} Number of messages sent from the park for each minute of the day. Two park systems in action: the park's help line gets very busy twice on Sunday, once at 11 am, and once at 3 pm (shown in orange). Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opt to get the app. Cell phones likely have to be turned off in the Scott Jones show, accounting for the dip in messages from 3-4 pm on Friday and Saturday. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
+\caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11 am, and once at 3 pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. During the Scott Jones shows at 10-11 am each day and 3-4 pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
 }
 
   }
