@@ -297,7 +297,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
                     labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
 
 @
-\caption{\label{fig:messages} Messages sent from the chaps of group 2566. }
+\caption{\label{fig:messages} Messages sent from the chaps of group 2566. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. }
 \end{figure}
 
 <<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
@@ -374,7 +374,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
             data=subset(breaks, id %in% c(1038892)))
 
 @
-\caption{\label{fig:x38} What is group 2566 up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - what else did they do?  }
+\caption{\label{fig:x38} What is group 2566 up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! If they were not actively involved in the act of vandalism, they might have seen who was. }
 \end{figure}
 
 
