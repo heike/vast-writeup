@@ -229,10 +229,10 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 p
 
 \subsection{A series of unfortunate events: who, when and where}
 
-Figure~\ref{fig:towhom} shows the number of messages originated from the Wet Land area by minute on Sunday between 11 am and 12:59 pm detailing the contributions of different groups to the peak in communitcation.
-A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45. This peak is made up of messages going forth-and-back between this group. Its decrease  goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line, gradually declining over the next half an hour. This peak is likely related to the closing of Creighton Pavilion for the remainder of the day.
+Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00 am and 12:59 pm detailing the contributions of different groups to the peak in communication.
+A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45 am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
 
-
+XXX We need a good name for the 37 guys from group 2566 - neither one is good XXX
 
 \begin{figure}
 <<incrowd, echo=FALSE>>=
