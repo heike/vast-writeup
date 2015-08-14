@@ -1,0 +1,6 @@
+mc1/cache
+*.log
+*.bbl
+*.gz
+*.tex
+mc1/data/park-movement*

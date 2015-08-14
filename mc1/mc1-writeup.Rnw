@@ -288,7 +288,7 @@ Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on
 
 
 \subsection{Barcode of activities}\label{sec:groups}
-We  define a group as a set of people who does the same rides together.
+We  define a group as a set of people who ride the same rides together.
 
 We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.
 
@@ -359,7 +359,7 @@ scott <- subset(checkins, Name %in% c("Grinosaurus Stage", "Creighton Pavilion")
 @
 
 % turn evaluation on when you first run the script.
-<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=5.25, eval=FALSE>>=
+<<vandals, dependson='vandalsdata', echo=FALSE, results='hide', fig.keep=FALSE, fig.width=11, fig.height=5.25, eval=TRUE>>=
 firstrect <- data.frame(xmin=9.5, xmax=11.5, ymin=0, ymax=200, day=c("Fri", "Sat", "Sun"))
 secondrect <- data.frame(xmin=14.5, xmax=16.5, ymin=0, ymax=200, day=c("Fri", "Sat"))
 ggplot(data=scott) +
