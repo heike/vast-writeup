@@ -145,11 +145,11 @@ library(RColorBrewer)
 @
 
 <<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
-fri <- read_csv("data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
+fri <- read_csv("../data/park-movement-Fri-FIXED-2.0.csv", col_types = list(
   Timestamp = col_character()))
-sat <- read_csv("data/park-movement-Sat.csv", col_types = list(
+sat <- read_csv("../data/park-movement-Sat.csv", col_types = list(
   Timestamp = col_character()))
-sun <- read_csv("data/park-movement-Sun.csv", col_types = list(
+sun <- read_csv("../data/park-movement-Sun.csv", col_types = list(
   Timestamp = col_character()))
 move <- rbind(fri, sat, sun)
 rm(fri, sat, sun)
@@ -223,7 +223,7 @@ moveplus <- move[order(move$day, move$id, move$Timestamp),]
 moveplus$timespent <- c(as.numeric(diff(moveplus$Timestamp)), NA)
 moveplus$timespent[moveplus$timespent < 0] <- NA
 
-park <- read.csv("data/park.csv")
+park <- read.csv("../extra/park.csv")
 checkins <- merge(subset(moveplus, type=="check-in"), park, by=c("X", "Y"), all=T)
 checkins$dmin <- with(checkins, hour*60+min)
 @
@@ -234,7 +234,7 @@ moves <- subset(moveplus, type == "movement")
 breaks <- subset(moves, timespent > 30)
 breaks$timespent <- breaks$timespent/60
 
-parkX <- read.csv("data/park-xtd.csv")
+parkX <- read.csv("../extra/park-xtd.csv")
 breaks <- merge(subset(breaks, timespent > 10), parkX, by=c("X", "Y"), all=T)
 breaks$dmin <- with(breaks, hour*60+min)
 
@@ -302,8 +302,8 @@ Using Ward's method for a hierarchical clustering based on these participant-par
 Figure~\ref{fig:groups} shows a sample of several groups going on rides together on Saturday. Just before 3 pm, Group 1819 seems to realize that taking the Wrightiraptor Mountain ride would make them late for the Scott Jones show, and they file back out after a short wait in the line.
 
 \begin{figure}
-<<groupsdata, cache=TRUE, echo=FALSE>>=
-groups <- read.csv("data/groups.csv")
+<<groupsdata, dependson='checkins', cache=TRUE, echo=FALSE>>=
+groups <- read.csv("../extra/groups.csv")
 checkinsgr <- merge(checkins, groups, by=c("id", "day"))
 # checkinsgr <- read.csv("data/checkinsgr.csv")
 # checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)

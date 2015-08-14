@@ -152,11 +152,11 @@ library(RColorBrewer)
 @
 
 <<readdata, cache=TRUE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
-fri <- read_csv("data/comm-data-Fri.csv", col_types = list(
+fri <- read_csv("../data/comm-data-Fri.csv", col_types = list(
   Timestamp = col_character()))
-sat <- read_csv("data/comm-data-Sat.csv", col_types = list(
+sat <- read_csv("../data/comm-data-Sat.csv", col_types = list(
   Timestamp = col_character()))
-sun <- read_csv("data/comm-data-Sun.csv", col_types = list(
+sun <- read_csv("../data/comm-data-Sun.csv", col_types = list(
   Timestamp = col_character()))
 com <- rbind(fri, sat, sun)
 rm(fri, sat, sun)
@@ -301,7 +301,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 \end{figure}
 
 <<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
-sunmov <- read_csv("../mc1/data/park-movement-Sun.csv", col_types = list(
+sunmov <- read_csv("../data/park-movement-Sun.csv", col_types = list(
   Timestamp = col_character()))
 sunmov$Timestamp <- ymd_hms(sunmov$Timestamp)
 sunmov$day <- wday(sunmov$Timestamp, label=TRUE)
@@ -328,11 +328,11 @@ moves <- subset(moveplus, type == "movement")
 breaks <- subset(moves, timespent > 30)
 breaks$timespent <- breaks$timespent/60
 
-parkX <- read.csv("../mc1/data/park-xtd.csv")
+parkX <- read.csv("../extra/park-xtd.csv")
 breaks <- merge(subset(breaks, timespent > 10), parkX, by=c("X", "Y"), all=T)
 breaks$dmin <- with(breaks, hour*60+min)
 
-groups <- read.csv("../mc1/data/groups.csv")
+groups <- read.csv("../extra/groups.csv")
 
 breaks <- merge(breaks, groups, by=c("id", "day"), all.x=TRUE)
 breaks$id <- factor(breaks$id)
