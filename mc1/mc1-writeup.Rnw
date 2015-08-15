@@ -72,7 +72,7 @@
 %% This is how authors are specified in the journal style
 
 %% indicate IEEE Member or Student Member in form indicated below
-\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, Carson Sievert and Samantha Tyner}
+\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, \\Carson Sievert and Samantha Tyner}
 \authorfooter{
 %% insert punctuation at end of each item
 \item
@@ -91,8 +91,7 @@
 
 %% Keywords that describe your work. Will show as 'Index Terms' in journal
 %% please capitalize first letter and insert punctuation after last keyword
-\keywords{Keywords that describe your work. Will show as 'Index Terms' in journal
- please capitalize first letter and insert punctuation after last keyword}
+\keywords{Time series plots, Droplet plots, Barcode plots.}
 
 %% ACM Computing Classification System (CCS).
 %% See <http://www.acm.org/class/1998/> for details.
