@@ -133,19 +133,17 @@
 %% ``\begin{document}'' command. It prepares and prints the title block.
 
 %% the only exception to this rule is the \firstsection command
-\firstsection{Data Manipulation}
+\firstsection{Two Park Systems in Action}
 \maketitle
-Some of our analysis is based on merging the communication information with the movements in the park. The common factor between the data sets is the timeline.
 
 
-
-\section{Results}
 <<setup, cache=FALSE, echo=FALSE, results='hide', message=FALSE, warning=FALSE>>=
 library(readr)
 library(lubridate)
 library(dplyr)
 library(ggplot2)
 library(jpeg)
+library(scales) 
 library(ggmap)
 library(grid)
 library(RColorBrewer)
@@ -196,7 +194,6 @@ com$back[com$to=="1278894"] <- 1278894
 domni <- data.frame(xtabs(~id  + location + dmin + day, data=com))
 domni$dmin <- as.numeric(as.character(domni$dmin))
 @
-\subsection{Two park systems in action}
 Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. From the pattern of messages sent and received we are able to identify these ids as the park's help line (839736) and the Cindysaurus trivia game (1278894), which is part of the DinoFun World app (how do we cite the auxiliary file?):
 
 During the even hours between noon and 8 pm questions are sent from the Cindysaurus trivia game (1278894) at five minute intervals  to just over 25\% of all park goers.
@@ -207,8 +204,7 @@ Almost all of the recipients quickly respond to each of the questions (while the
 
 Id 839736 on the other hand, has a very different pattern. Every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, on Sunday this number spikes to 95\% of all park goers.
 
-%\begin{figure}[hbt]
-<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
+<<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='0.9\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
 qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
   facet_grid(facets=day~location, scale="free_y", space="free_y") +
   geom_line(aes(colour=id, group=id), size=0.15, alpha=0.5, subset(domni, id!="others")) +
@@ -227,9 +223,10 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
 The spikes at 10am, 11am, 3pm and 4pm are all related to Scott Jones sightings, who makes his way from the East entrance entering  Kiddie Land to Grinosaurus Stage in the Coaster Alley.
 The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
 
-\subsection{A scene worthwhile texting about}
+\section{A scene worthwhile texting about}
 At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
 Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location at which messages originated, their size indicates the number of messages. 
+Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
 <<kiddies-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide', cache=TRUE>>=
 # two flare-ups: one at 12:00, one at 12:30
 # qplot(dmin, Freq, data=subset(dc, location=="Kiddie Land" & hour==12))
@@ -328,17 +325,19 @@ levels(msgs$ddsec) <- c("0-14 secs", "15 - 29 secs", "30 - 44 secs", "45 - 59 se
 
 
 \begin{figure}
-<<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=7, fig.height=7.25, out.width='\\columnwidth', cache=TRUE>>=
+\centering
+<<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=7, fig.height=7.25, out.width='0.8\\columnwidth', cache=TRUE>>=
 ggimage(park, fullpage = FALSE) +
   geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", 
             colour="#FFFFEB", alpha=0.5) +
   theme(axis.text = element_blank(), axis.ticks=element_blank(),
         axis.title = element_blank(),
-        plot.margin=unit(c(0,0,0,0), "line")) +
+        plot.margin=unit(c(0,-.5,-1,-2), "line"),
+        legend.background = element_rect(fill=alpha('white', 0.5))) +
     geom_point(aes(x=X*6.69, y=Y*6.74, size=n), colour="orange", alpha=0.8, 
                data=msgs) + 
   facet_wrap(~ddsec, nrow=2) +
-  scale_size("# Messages sent") + 
+  scale_size("# messages") + 
   ggtitle("News from the SabreTooth Theatre") +
   theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
@@ -359,12 +358,10 @@ ggplot(data=subset(fromto, nrec > 7),
 \caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5 pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
 \end{figure}
 
-\subsection{A series of unfortunate events: who, when and where}
+\section{A series of unfortunate events: who, when and where}
 
 Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00 am and 12:59 pm detailing the contributions of different groups to the peak in communication.
 A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45 am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
-
-XXX We need a good name for the 37 guys from group 2566 - neither one is good XXX
 
 \begin{figure}
 <<incrowd, echo=FALSE>>=
@@ -387,11 +384,12 @@ dt <- table(peak$to)
 
 x38 <- names(dt)[which(dt >= 250)]
 @
-<<towhom, dependson='incrowd', echo=FALSE, fig.width=7, fig.height=4.5, out.width='\\columnwidth'>>=
+\centering
+<<towhom, dependson='incrowd', echo=FALSE, fig.width=7, fig.height=4.5, out.width='0.9\\columnwidth'>>=
 com$back <- "other park-goers"
 com$back[com$to=="839736"] <- "Park help-line"
 com$back[com$to=="1278894"] <- "DinoFun App"
-com$back[com$to %in% x38] <- "37 chaps"
+com$back[com$to %in% x38] <- "37 Penguins???"
 com$back[com$to=="external"] <- "external"
 
 domni <- data.frame(xtabs(~back  + location + dmin + day, data=com))
@@ -412,7 +410,8 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
 \end{figure}
 
 \begin{figure}
-<<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='\\columnwidth'>>=
+\centering
+<<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='0.9\\columnwidth'>>=
 s38 <- subset(com, from %in% x38)
 s38$from <- factor(s38$from)
 
@@ -420,7 +419,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
   geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5, position = position_jitter(height = .5)) +
   geom_point(size=1.5) +
   theme_bw() +
-  ggtitle("Messages sent by the 37 guys from group 2566") +
+  ggtitle("Messages sent by the 37 `penguins'") +
   scale_colour_brewer("Recipient", palette="Set2") +
   theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
   xlab("Time of day") +
@@ -429,7 +428,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
                     labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
 
 @
-\caption{\label{fig:messages} Messages sent from the chaps of group 2566. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. }
+\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. }
 \end{figure}
 
 <<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
@@ -479,7 +478,8 @@ checkinsgr <- merge(checkinsgr, parkX, by=c("X", "Y"), all=T)
 
 @
 
-<<x38, echo=FALSE, fig.width=7, fig.height=4.25, out.width='\\columnwidth'>>=
+\centering
+<<x38, echo=FALSE, fig.width=7, fig.height=4.25, out.width='0.9\\columnwidth'>>=
 #checkinsgr <- read.csv("../mc1/data/checkinsgr.csv")
 #checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
 #checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
@@ -491,7 +491,7 @@ checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
 # checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
 
 qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,11, 7,1,8)]) +
-  ggtitle("Activities of the 37 guys from group 2566") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
+  ggtitle("Activities of the 37 `penguins'") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
   geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1038892)), size=3.5) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) +
   scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
@@ -505,12 +505,12 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
             data=subset(breaks, id %in% c(1038892)))
 
 @
-\caption{\label{fig:x38} What is group 2566 up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! If they were not actively involved in the act of vandalism, they might have seen who was. }
+\caption{\label{fig:x38} What is the group of `penguins' up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! If they were not actively involved in the act of vandalism, they might have seen who was. }
 \end{figure}
 
 
 Interestingly, the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
-They are either standing perfectly still in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}).
+They are either standing perfectly still - like the penguins we've named them -  in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}).
 
 
 %' 
