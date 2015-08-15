@@ -227,6 +227,136 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
 The spikes at 10am, 11am, 3pm and 4pm are all related to Scott Jones sightings, who makes his way from the East entrance entering  Kiddie Land to Grinosaurus Stage in the Coaster Alley.
 The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
 
+\subsection{A scene worthwhile texting about}
+At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
+<<kiddies-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide', cache=TRUE>>=
+# two flare-ups: one at 12:00, one at 12:30
+# qplot(dmin, Freq, data=subset(dc, location=="Kiddie Land" & hour==12))
+# qplot(dmin, Freq, data=subset(dc, location=="Kiddie Land" & hour==17), colour=day)
+library(jpeg)
+park <- readJPEG("../extra/Park Map.jpg")
+library(ggmap)
+
+alignTime <- function(moves, comms) {
+  movfri <- moves[,c("Timestamp", "id", "type", "X", "Y")]
+  comfri <- comms[, c("Timestamp", "from", "to", "location")]
+  movfri$to <- NA
+  movfri$location <- NA
+  
+  names(comfri)[2] <- "id"
+  comfri$X <- NA
+  comfri$Y <- NA
+  comfri$type <- "send"
+  
+  allfri <- rbind(movfri, comfri)
+  allfri <- allfri[order(allfri$id, allfri$Timestamp),]
+  allfri$day <- wday(allfri$Timestamp, label=TRUE)
+  allfri <- allfri %>% group_by(day) %>% mutate(
+    dsec = as.numeric(Timestamp-min(Timestamp))
+  )
+  allfri$cid <- paste(allfri$id, allfri$dsec)
+  
+  allfri$X2 <- allfri$X
+  allfri$Y2 <- allfri$Y
+  idx <- which(is.na(allfri$X2))
+  # substitute all locations for messages with 50 or fewer recipients
+  for (i in 1:50) {
+    allfri$X2[idx] <- allfri$X2[idx-1]
+    allfri$Y2[idx] <- allfri$Y2[idx-1]
+    
+  }
+  
+  # different approach: identify all runs, substitute the location with the minimum-1 of the run
+  didx <- diff(idx)
+  leads <- c(0, which(didx > 1)) + 1
+  ends <- c(which(didx > 1), length(idx))
+  
+  perc <- 0
+  allfri$X3 <- allfri$X2
+  allfri$Y3 <- allfri$Y2
+  for (i in 1:length(leads)) {
+    allfri$X3[idx[leads[i]]:idx[ends[i]]] <- allfri$X2[idx[leads[i]]-1]
+    allfri$Y3[idx[leads[i]]:idx[ends[i]]] <- allfri$Y2[idx[leads[i]]-1]
+  }
+  
+  allfri$X <- allfri$X3
+  allfri$Y <- allfri$Y3
+  subset(allfri, type=="send")
+}
+
+
+kiddies <- subset(com, location=="Kiddie Land" & dmin %in% 1020 & day=="Sat")
+kiddies <- subset(kiddies, !(back %in% c("DinoFun App", "Park help-line", "external")))
+
+fromto <- kiddies %>% group_by(from, to, day) %>% summarize(n=n())
+fromto <- fromto %>% group_by(from) %>% mutate(nrec = n())
+vertices <- data.frame(label=unique(c(fromto$from, fromto$to)))
+
+dt <- table(kiddies$from)
+topsenders <- names(dt)[dt > 5]
+tos <- lapply(topsenders, function(x) c(x, unique(subset(kiddies, from==x)$to)))
+# groups <- read.csv("../extra/groups.csv")
+# names(groups)[1] <- "label"
+# vertices <- merge(vertices, groups, by="label")
+# vertices <- vertices %>% group_by(group) %>% mutate(groupsize=n())
+cols <- c(brewer.pal(12, "Paired"), "#33A02C", "#006600", "#16547E", "#FF9933")
+cols <- c(cols, rev(cols) )
+
+vertices$col <- "#CCCCCC"
+for (i in 1:length(tos)) {
+  vertices$col[which(vertices$label %in% tos[[i]])] <- cols[i]
+}
+satmov <- read_csv("../data/park-movement-Sat.csv", col_types = list(
+  Timestamp = col_character()))
+satmov$Timestamp <- ymd_hms(satmov$Timestamp)
+sensors <- unique(satmov[,c("X", "Y")])
+
+kiddiesplus <- alignTime(satmov, kiddies)
+kiddiesplus$min <- minute(kiddiesplus$Timestamp)
+kiddiesplus$hour <- hour(kiddiesplus$Timestamp)
+kiddiesplus$dmin <- with(kiddiesplus, hour*60+min)
+kiddiesplus$second <- second(kiddiesplus$Timestamp)
+kiddiesplus$dsec <- with(kiddiesplus, (hour*60+min)*60+second)
+kiddiesplus$ddsec <- kiddiesplus$dsec %/% 15
+kiddiesplus$ddsec <- factor(kiddiesplus$ddsec)
+
+msgs <- kiddiesplus %>% group_by(X,Y, ddsec) %>% summarize(n=n())
+levels(msgs$ddsec) <- c("0-14 secs", "15 - 29 secs", "30 - 44 secs", "45 - 59 secs")
+@
+
+
+
+\begin{figure}
+<<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6.25, out.width='\\columnwidth', cache=TRUE>>=
+ggimage(park, fullpage = FALSE) +
+  geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", 
+            colour="#FFFFEB", alpha=0.5) +
+  theme(axis.text = element_blank(), axis.ticks=element_blank(),
+        axis.title = element_blank(),
+        plot.margin=unit(c(0,0,-1,-1), "line")) +
+    geom_point(aes(x=X*6.69, y=Y*6.74, size=n), colour="orange", alpha=0.8, 
+               data=msgs) + 
+  facet_wrap(~ddsec, nrow=2) +
+  scale_size("Number of messages sent") + 
+  theme(legend.position="bottom") + ggtitle("News from the SabreTooth Theatre")
+@
+\caption{\label{fig:map}Messages sent during the spike originating in the Kiddie Land. Maps at 15 second intervals show that some news-worthy event happened in front of the SabreTooth Theatre (location 64), from there people spread to the North and the South and then slowly dissipate.}
+\end{figure}
+
+\begin{figure}
+\centering
+<<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.8\\columnwidth', cache=TRUE>>=
+set.seed(20150814)
+ggplot(data=subset(fromto, nrec > 7),
+       aes(from_id=from, to_id=to, ecolour="#888888")) + 
+  geom_net(vertices=vertices, aes(vcolour=col, vsize=3)) + 
+  xlim(c(0,1)) + ylim(c(0,1)) +theme_bw() + 
+  theme(axis.ticks=element_blank(), axis.text=element_blank()) + 
+  ggtitle("Network of messages sent from the Kiddie Land at 5:00 pm")
+@
+\caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5 pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
+\end{figure}
+
 \subsection{A series of unfortunate events: who, when and where}
 
 Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00 am and 12:59 pm detailing the contributions of different groups to the peak in communication.
@@ -313,7 +443,6 @@ sunmov$timespent <- c(as.numeric(diff(sunmov$Timestamp)), NA)
 sunmov$timespent[sunmov$timespent < 0] <- NA
 
 checkins <- subset(sunmov, type=="check-in")
-sensors <- unique(sunmov[,c("X", "Y")])
 m38 <- subset(sunmov, id %in% x38)
 @
 
@@ -379,38 +508,42 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, d
 
 
 Interestingly, the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
-They are either standing perfectly still in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion (see figure~\ref{fig:map}).
-
-\begin{figure}
-\centering
-<<map-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
-library(jpeg)
-park <- readJPEG("../extra/Park Map.jpg")
-library(ggmap)
-@
-<<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='.8\\columnwidth', message=FALSE, warning=FALSE>>=
-lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
-  when=max(Timestamp),
-  waitX=X[which.max(Timestamp)],
-  waitY=Y[which.max(Timestamp)])
-
-firstmove <- m38 %>% filter(hour==12) %>% group_by(id) %>% summarize(
-   when=min(Timestamp),
-   waitX=X[which.min(Timestamp)],
-   waitY=Y[which.min(Timestamp)])
+They are either standing perfectly still in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}).
 
 
-ggimage(park, fullpage = FALSE) +
-  geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", colour="#FFFFEB", alpha=0.5) +
-  theme(axis.text = element_blank(), axis.ticks=element_blank(),
-        axis.title = element_blank(),
-        plot.margin=unit(c(0,0,-1,-1), "line")) +
-    geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=lastmove, colour="red") + geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=firstmove, colour="orange") +
-  ggtitle("The chaps of group 2566 disappear and re-appear")
+%' 
+%' \begin{figure}
+%' \centering
+%' <<map-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
+%' library(jpeg)
+%' park <- readJPEG("../extra/Park Map.jpg")
+%' library(ggmap)
+%' @
+%' <<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='.8\\columnwidth', message=FALSE, warning=FALSE>>=
+%' lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
+%'   when=max(Timestamp),
+%'   waitX=X[which.max(Timestamp)],
+%'   waitY=Y[which.max(Timestamp)])
+%' 
+%' firstmove <- m38 %>% filter(hour==12) %>% group_by(id) %>% summarize(
+%'    when=min(Timestamp),
+%'    waitX=X[which.min(Timestamp)],
+%'    waitY=Y[which.min(Timestamp)])
+%' 
+%' 
+%' ggimage(park, fullpage = FALSE) +
+%'   geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", colour="#FFFFEB", alpha=0.5) +
+%'   theme(axis.text = element_blank(), axis.ticks=element_blank(),
+%'         axis.title = element_blank(),
+%'         plot.margin=unit(c(0,0,-1,-1), "line")) +
+%'     geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=lastmove, colour="red") + geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=firstmove, colour="orange") +
+%'   ggtitle("The chaps of group 2566 disappear and re-appear")
+%' 
+%' @
+%' \caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times 5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or -- much more likely -- they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
+%' \end{figure}
+%' 
 
-@
-\caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times 5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or -- much more likely -- they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
-\end{figure}
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
 The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-package, knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
@@ -433,8 +566,8 @@ The authors wish to thank everybody who makes the software R~\cite{R} possible, 
 %'   theme(legend.position="bottom")
 %' 
 %' alignTime <- function(moves, comms) {
-%'   movfri <- sunmov[,c("Timestamp", "id", "type", "X", "Y")]
-%'   comfri <- coaster[, c("Timestamp", "from", "to", "location")]
+%'   movfri <- moves[,c("Timestamp", "id", "type", "X", "Y")]
+%'   comfri <- comms[, c("Timestamp", "from", "to", "location")]
 %'   movfri$to <- NA
 %'   movfri$location <- NA
 %'   
@@ -478,8 +611,10 @@ The authors wish to thank everybody who makes the software R~\cite{R} possible, 
 %'   allfri$Y <- allfri$Y3
 %'   subset(allfri, type=="send")
 %' }
-%' 
 %' @
+
+
+
 
 \bibliographystyle{abbrv}
 %%use following if all content of bibtex file should be shown
