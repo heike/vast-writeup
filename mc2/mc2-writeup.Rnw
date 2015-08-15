@@ -72,7 +72,7 @@
 %% This is how authors are specified in the journal style
 
 %% indicate IEEE Member or Student Member in form indicated below
-\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, Carson Sievert and Samantha Tyner}
+\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, \\Carson Sievert and Samantha Tyner}
 \authorfooter{
 %% insert punctuation at end of each item
 \item
@@ -229,6 +229,7 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 p
 
 \subsection{A scene worthwhile texting about}
 At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
+Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location at which messages originated, their size indicates the number of messages. 
 <<kiddies-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide', cache=TRUE>>=
 # two flare-ups: one at 12:00, one at 12:30
 # qplot(dmin, Freq, data=subset(dc, location=="Kiddie Land" & hour==12))
@@ -327,25 +328,26 @@ levels(msgs$ddsec) <- c("0-14 secs", "15 - 29 secs", "30 - 44 secs", "45 - 59 se
 
 
 \begin{figure}
-<<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6.25, out.width='\\columnwidth', cache=TRUE>>=
+<<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=7, fig.height=7.25, out.width='\\columnwidth', cache=TRUE>>=
 ggimage(park, fullpage = FALSE) +
   geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", 
             colour="#FFFFEB", alpha=0.5) +
   theme(axis.text = element_blank(), axis.ticks=element_blank(),
         axis.title = element_blank(),
-        plot.margin=unit(c(0,0,-1,-1), "line")) +
+        plot.margin=unit(c(0,0,0,0), "line")) +
     geom_point(aes(x=X*6.69, y=Y*6.74, size=n), colour="orange", alpha=0.8, 
                data=msgs) + 
   facet_wrap(~ddsec, nrow=2) +
-  scale_size("Number of messages sent") + 
-  theme(legend.position="bottom") + ggtitle("News from the SabreTooth Theatre")
+  scale_size("# Messages sent") + 
+  ggtitle("News from the SabreTooth Theatre") +
+  theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
-\caption{\label{fig:map}Messages sent during the spike originating in the Kiddie Land. Maps at 15 second intervals show that some news-worthy event happened in front of the SabreTooth Theatre (location 64), from there people spread to the North and the South and then slowly dissipate.}
+\caption{\label{fig:map}Messages sent during the spike originating in the Kiddie Land. Maps at 15 second intervals show that some news-worthy event happened in front of the SabreTooth Theatre (location 64) triggering messages sent (in orange), from there people spread to the North and the South and then slowly dissipate.}
 \end{figure}
 
 \begin{figure}
 \centering
-<<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.8\\columnwidth', cache=TRUE>>=
+<<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.7\\columnwidth', cache=TRUE>>=
 set.seed(20150814)
 ggplot(data=subset(fromto, nrec > 7),
        aes(from_id=from, to_id=to, ecolour="#888888")) + 
