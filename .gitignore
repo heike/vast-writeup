@@ -4,5 +4,5 @@ mc2/cache
 *.bbl
 *.gz
 *.tex
-mc1/data/park-movement*
-mc2/data/comm-data*
+data/park-movement*
+data/comm-data*
