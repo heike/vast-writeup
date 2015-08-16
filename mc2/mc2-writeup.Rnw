@@ -30,6 +30,7 @@
 \usepackage{times}
 %\usepackage[font=small,skip=0pt]{caption}
 \usepackage[font=small,skip=5pt]{caption}
+\usepackage{subcaption}
 
 %% We encourage the use of mathptmx for consistent usage of times font
 %% throughout the proceedings. However, if you encounter conflicts
@@ -67,7 +68,7 @@
 
 %% Paper title.
 
-\title{Communications at DinoFun World}
+\title{Visualizing Communication Patterns at DinoFun World}
 
 %% This is how authors are specified in the journal style
 
@@ -82,7 +83,7 @@
  }
 
 %other entries to be set up for journal
-\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Communications}
+\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Visualizing Communication Patterns}
 %\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
 
 % %% Abstract section.
@@ -91,8 +92,7 @@
 
 %% Keywords that describe your work. Will show as 'Index Terms' in journal
 %% please capitalize first letter and insert punctuation after last keyword
-\keywords{Keywords that describe your work. Will show as 'Index Terms' in journal
- please capitalize first letter and insert punctuation after last keyword}
+\keywords{Spatio-temporal visualizations; Barcode plot; }
 
 %% ACM Computing Classification System (CCS).
 %% See <http://www.acm.org/class/1998/> for details.
@@ -110,7 +110,7 @@
 %% Uncomment below to include a teaser figure.
    \teaser{
     \centering
-    \includegraphics[width=.75\linewidth]{figure/omni-1.pdf}
+    \includegraphics[width=.7\linewidth]{figure/omni-1.pdf}
 \caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11 am, and once at 3 pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. The Scott Jones shows at 10-11 am each day and 3-4 pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.
 }
 
@@ -202,7 +202,7 @@ Besides these questions exactly at the top of every five minutes there are no ot
 Almost all of the recipients quickly respond to each of the questions (while they wait in the very long lines).
 %One potential scenario that we can think of is that the id is used for a (park-related?) trivia(?)  game to entertain park goers
 
-Id 839736 on the other hand, has a very different pattern. Every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, on Sunday this number spikes to 95\% of all park goers.
+The park's help line (839736) on the other hand, has a very different pattern: every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, while this number spikes to 95\% of all park goers on Sunday. 
 
 <<omni, dependson='omni-data', echo=FALSE, fig.width=12, fig.height=7, out.width='0.9\\columnwidth', cache=TRUE, results='asis', eval=FALSE>>=
 qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), colour=I("grey60")) +
@@ -225,7 +225,7 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 p
 
 \section{A scene worthwhile texting about}
 At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
-Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location at which messages originated, their size indicates the number of messages. 
+Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location from which messages are sent, their size indicates the number of messages. Messages originate mainly from a single location in front of the SabreTooth Theatre (location~64). 
 Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
 <<kiddies-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide', cache=TRUE>>=
 # two flare-ups: one at 12:00, one at 12:30
@@ -346,7 +346,7 @@ ggimage(park, fullpage = FALSE) +
 
 \begin{figure}
 \centering
-<<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.7\\columnwidth', cache=TRUE>>=
+<<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.65\\columnwidth', cache=TRUE>>=
 set.seed(20150814)
 ggplot(data=subset(fromto, nrec > 7),
        aes(from_id=from, to_id=to, ecolour="#888888")) + 
@@ -409,28 +409,10 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
 \caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00~am and 12:59~pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
 
+
+
+
 \begin{figure}
-\centering
-<<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='0.9\\columnwidth'>>=
-s38 <- subset(com, from %in% x38)
-s38$from <- factor(s38$from)
-
-ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
-  geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5, position = position_jitter(height = .5)) +
-  geom_point(size=1.5) +
-  theme_bw() +
-  ggtitle("Messages sent by the 37 `penguins'") +
-  scale_colour_brewer("Recipient", palette="Set2") +
-  theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
-  xlab("Time of day") +
-  ylab("") +
-  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
-                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
-
-@
-\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. }
-\end{figure}
-
 <<x38-moves, echo=FALSE, message=FALSE, warning=FALSE, results="hide">>=
 sunmov <- read_csv("../data/park-movement-Sun.csv", col_types = list(
   Timestamp = col_character()))
@@ -446,8 +428,6 @@ sunmov$timespent[sunmov$timespent < 0] <- NA
 checkins <- subset(sunmov, type=="check-in")
 m38 <- subset(sunmov, id %in% x38)
 @
-
-\begin{figure}
 <<breaks, echo=FALSE>>=
 moveplus <- sunmov[order(sunmov$day, sunmov$id, sunmov$Timestamp),]
 moveplus$timespent <- c(as.numeric(diff(moveplus$Timestamp)), NA)
@@ -475,76 +455,72 @@ checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 # 
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
 checkinsgr <- merge(checkinsgr, parkX, by=c("X", "Y"), all=T)
-
 @
-
+\begin{subfigure}{\columnwidth}
 \centering
-<<x38, echo=FALSE, fig.width=7, fig.height=4.25, out.width='0.9\\columnwidth'>>=
+<<x38, echo=FALSE, fig.width=7, fig.height=4.25, out.width='0.8\\columnwidth'>>=
 #checkinsgr <- read.csv("../mc1/data/checkinsgr.csv")
 #checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
 #checkinsgr$id <- reorder(checkinsgr$id, checkinsgr$group, mean)
 
-cols <- brewer.pal(12, "Paired")
+cols <- c(brewer.pal(12, "Paired"), "#DDDDDD")
 
 checkinsgr$dmin <- with(checkinsgr, (hour*60+min)/60)
 # checkinsgr$Name <- gsub("concert space", "Grinosaurus Stage", checkinsgr$Name)
 # checkinsgr$Type <- gsub("concert space", "Shows & Entertainment", checkinsgr$Type)
+breaks$Type <- "Breaks, no check-in"
+alldata <- rbind(checkinsgr, breaks[,names(checkinsgr)])
 
-qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(checkinsgr, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(3,4,11, 7,1,8)]) +
+qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(alldata, day=="Sun" & group %in% c(2566)), colour=Type,geom="segment", size=I(3)) +  theme_bw() + scale_colour_manual(values=cols[c(13, 3,4,11, 7,1,8)]) +
   ggtitle("Activities of the 37 `penguins'") + theme(legend.position="bottom") + ylab("") + guides(colour = guide_legend(nrow=2)) +
-  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(checkinsgr, id %in% c(1038892)), size=3.5) +
+  geom_text(aes(x=dmin+timespent/(2*60^2), y=id, label=Name), colour="grey30", angle=90, data=subset(alldata, id %in% c(1038892)), size=3.5) +
   theme(plot.margin=unit(c(0,0,0,0), "cm")) +
   scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
-                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm")) +
-  geom_segment(aes(x=dmin, xend=dmin+timespent/60, y=id, yend=id), 
-               data=subset(breaks, timespent > 10 & day=="Sun" & 
-                             group %in% c(2566)),
-               colour="#DDDDDD", size=I(3)) +
-  geom_text(aes(x=dmin+timespent/(2*60), y=id, label=Name), 
-            colour="grey30", angle=90, size=3.5, 
-            data=subset(breaks, id %in% c(1038892)))
+                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm")) 
+#+
+#  geom_segment(aes(x=dmin, xend=dmin+timespent/60, y=id, yend=id), 
+#               data=subset(breaks, timespent > 10 & day=="Sun" & 
+#                             group %in% c(2566)),
+#               colour="#DDDDDD", size=I(3)) +
+#  geom_text(aes(x=dmin+timespent/(2*60), y=id, label=Name), 
+#            colour="grey30", angle=90, size=3.5, 
+#            data=subset(breaks, id %in% c(1038892)))
 
 @
-\caption{\label{fig:x38} What is the group of `penguins' up to? These guys come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! If they were not actively involved in the act of vandalism, they might have seen who was. }
+\subcaption{\label{fig:x38}  The `penguins' come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it!  }
+\end{subfigure}
+\begin{subfigure}{\columnwidth}
+\centering
+
+<<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='0.8\\columnwidth'>>=
+s38 <- subset(com, from %in% x38)
+s38$from <- factor(s38$from)
+
+ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
+  geom_jitter(data=subset(s38, back=="in-crowd"), size=1.5, position = position_jitter(height = .5)) +
+  geom_point(size=1.5) +
+  theme_bw() +
+  ggtitle("Messages sent by the 37 `penguins'") +
+  scale_colour_brewer("Recipient", palette="Set2") +
+  theme(plot.margin=unit(c(0,0,0,0), "cm"), legend.position="bottom") +
+  xlab("Time of day") +
+  ylab("") +
+  scale_x_continuous("Time of the day", breaks=c(9,12,15,18,21),
+                    labels=c("9 am", "12 pm", "15 pm", "18 pm", "21 pm"))
+
+@
+
+\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. They are rather early with sending the external messages. Did they know more than the other park-goers?}
+\end{subfigure}
+\caption{\label{fig:penguins} What is the group of `penguins' up to?}
 \end{figure}
 
 
-Interestingly, the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
-They are either standing perfectly still - like the penguins we've named them -  in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}).
+When investigating this group if 37 further we find some interesting things:  the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
+They are either standing perfectly still - like the penguins after which we've named them -  in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}). That is quite suspicious! If they were not actively involved in the act of vandalism, they might have seen who was.
 
 
-%' 
-%' \begin{figure}
-%' \centering
-%' <<map-data, echo=FALSE, warning=FALSE, message=FALSE, results='hide'>>=
-%' library(jpeg)
-%' park <- readJPEG("../extra/Park Map.jpg")
-%' library(ggmap)
-%' @
-%' <<map, dependson='map-data', echo=FALSE, fig.width=5, fig.height=5, out.width='.8\\columnwidth', message=FALSE, warning=FALSE>>=
-%' lastmove <- m38 %>% filter(hour==9) %>% group_by(id) %>% summarize(
-%'   when=max(Timestamp),
-%'   waitX=X[which.max(Timestamp)],
-%'   waitY=Y[which.max(Timestamp)])
-%' 
-%' firstmove <- m38 %>% filter(hour==12) %>% group_by(id) %>% summarize(
-%'    when=min(Timestamp),
-%'    waitX=X[which.min(Timestamp)],
-%'    waitY=Y[which.min(Timestamp)])
-%' 
-%' 
-%' ggimage(park, fullpage = FALSE) +
-%'   geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", colour="#FFFFEB", alpha=0.5) +
-%'   theme(axis.text = element_blank(), axis.ticks=element_blank(),
-%'         axis.title = element_blank(),
-%'         plot.margin=unit(c(0,0,-1,-1), "line")) +
-%'     geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=lastmove, colour="red") + geom_point(aes(x=waitX*6.69, y=waitY*6.74), data=firstmove, colour="orange") +
-%'   ggtitle("The chaps of group 2566 disappear and re-appear")
-%' 
-%' @
-%' \caption{\label{fig:map}Map of DinoFun World park. Sensors are keeping track of park-goers movements in cells $5m \times 5m$ along the park's pathways (overlaid in light yellow). The group of 37 chaps either stands like oil sardines for more than 2 hours in the cell marked by the red dot, or -- much more likely -- they are on the loose somewhere in the area around  Creighton Pavilion (building no.~32).}
-%' \end{figure}
-%' 
+
 
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
