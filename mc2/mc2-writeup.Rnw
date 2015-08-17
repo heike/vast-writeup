@@ -111,7 +111,7 @@
    \teaser{
     \centering
     \includegraphics[width=.7\linewidth]{figure/omni-1.pdf}
-\caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11\,am, and once at 3 pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. The Scott Jones shows at 10-11\,am each day and 3-4 pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.}}
+\caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11\,am, and, slightly less so, at 3\,pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. The Scott Jones shows at 10-11\,am each day and 3-4\,pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.}}
 
 %% Uncomment below to disable the manuscript note
 %\renewcommand{\manuscriptnotetxt}{}
@@ -207,7 +207,7 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
 
 Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. From the pattern of messages sent and received we are able to identify these ids as the park's help line (839736) and the Cindysaurus trivia game (1278894), which is part of the DinoFun World app (IEEE VAST Challenge 2015).
 
-During the even hours between noon and 8 pm questions are sent from the Cindysaurus trivia game at five minute intervals  to just over 25\% of all park goers.
+During the even hours between noon and 8\,pm questions are sent from the Cindysaurus trivia game at five minute intervals  to just over 25\% of all park goers.
 Judging from the large number of messages and the relatively low percentage of recipients this looks like an opt-in service.
 Besides these questions exactly at the top of every five minutes there are no other messages from this id.
 Almost all of the recipients quickly respond to each of the questions (while they wait in the very long lines).
@@ -337,8 +337,8 @@ The park's help line (839736) on the other hand, has a very different pattern: e
 
 
 
-The spikes at 11~am and 4~pm are triggered by people texting while filing out of the Scott Jones show.
-The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
+The spikes at 11\,am and 4\,pm are triggered by people texting while filing out of the Scott Jones show.
+The spikes in the Wet Land area and the Entry Corridor between 10:30\,am and 12\,pm on Sunday are related to the unfortunate events surrounding Scott Jones.
 
 \section{A scene worthwhile texting about}
 \begin{figure}[hbt]
@@ -352,10 +352,10 @@ ggplot(data=subset(fromto, nrec > 7),
   theme(axis.ticks=element_blank(), axis.text=element_blank()) + 
   ggtitle("Network of messages sent from the Kiddie Land at 5:00 pm")
 @
-\caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5 pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
+\caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5\,pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
 \end{figure}
 
-At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
+At exactly 5\,pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
 Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location from which messages are sent, their size indicates the number of messages. Messages originate mainly from a single location in front of the SabreTooth Theatre (location~64). 
 Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1,000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
 
@@ -404,10 +404,10 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
   theme(plot.margin=unit(c(0,0,0,0), unit="cm")) +
   ggtitle("Who was sending messages?")
 @
-\caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00~am and 12:59~pm. Several sources contribute to the spikes in sent messages. }
+\caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00\,am and 12:59\,pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
-Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00 am and 12:59 pm detailing the contributions of different groups to the peak in communication.
-A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45 am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
+Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00\,am and 12:59\,pm detailing the contributions of different groups to the peak in communication.
+A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45\,am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
 
 
 
@@ -488,7 +488,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(alldata, day=
 #            data=subset(breaks, id %in% c(1038892)))
 
 @
-\subcaption{\label{fig:x38}  The `penguins' come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! What were they doing there? }
+\subcaption{\label{fig:x38}  The `penguins' are a closely knit group that comes into DinoFun World at around 9:30, but takes their first ride after 12:30\,pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! What were they doing there? }
 \end{subfigure}
 \begin{subfigure}{\columnwidth}
 \centering
@@ -511,7 +511,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 
 @
 
-\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45 am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. They are rather early with sending the external messages. Did they know more than the other park-goers?}
+\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45\,am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. They are rather early with sending the external messages. Did they know more than the other park-goers?}
 \end{subfigure}
 \caption{\label{fig:penguins} What is the group of `penguins' up to?}
 \end{figure}
