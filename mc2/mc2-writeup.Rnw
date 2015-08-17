@@ -110,7 +110,7 @@
 %% Uncomment below to include a teaser figure.
    \teaser{
     \centering
-    \includegraphics[width=.65\linewidth]{figure/omni-1.pdf}
+    \includegraphics[width=.7\linewidth]{figure/omni-1.pdf}
 \caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11 am, and once at 3 pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. The Scott Jones shows at 10-11 am each day and 3-4 pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.}}
 
 %% Uncomment below to disable the manuscript note
@@ -205,7 +205,7 @@ qplot(dmin/60, Freq, data=subset(domni, id=="others"), geom=c("point", "line"), 
 #  scale_x_continuous(breaks=8:24, labels=paste(c(8:12,1:12), c(rep("am", 4), rep("pm", 12), "am")))
 @
 
-Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. From the pattern of messages sent and received we are able to identify these ids as the park's help line (839736) and the Cindysaurus trivia game (1278894), which is part of the DinoFun World app (how do we cite the auxiliary file?):
+Two IDs are notable for their large volume of messages: 1278894 and 839736. These IDs are responsible for almost 80\% of the message volume. Both these ids are stationary, sending messages from the Entry Corridor only. From the pattern of messages sent and received we are able to identify these ids as the park's help line (839736) and the Cindysaurus trivia game (1278894), which is part of the DinoFun World app (IEEE VAST Challenge 2015).
 
 During the even hours between noon and 8 pm questions are sent from the Cindysaurus trivia game at five minute intervals  to just over 25\% of all park goers.
 Judging from the large number of messages and the relatively low percentage of recipients this looks like an opt-in service.
