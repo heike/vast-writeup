@@ -309,9 +309,9 @@ levels(msgs$ddsec) <- c("0-14 secs", "15 - 29 secs", "30 - 44 secs", "45 - 59 se
 @
 
 
-
 \begin{figure}[bhp]
 \centering
+%\vspace{-2in}
 <<kiddies-map, dependson='kiddies-data', echo=FALSE, fig.width=7, fig.height=7.25, out.width='0.8\\columnwidth', cache=TRUE>>=
 ggimage(park, fullpage = FALSE) +
   geom_tile(aes(X*6.69,Y*6.74), data=sensors, fill="#FFFFCC", 
@@ -330,11 +330,18 @@ ggimage(park, fullpage = FALSE) +
 \caption{\label{fig:map}Messages sent during the spike originating in the Kiddie Land. Maps summarizing 15 second intervals show that some news-worthy event happened in front of the SabreTooth Theatre (location 64) triggering messages (in orange), from there people (and texts) spread to the North and the South and then slowly dissipate.}
 \end{figure}
 
+
+
 The park's help line (839736) on the other hand, has a very different pattern: every single one of the messages sent from this id is solicited by a previous message by a park goer. On Friday and Saturday  about 85\% of all park goers make use of the park's help line, while this number spikes to 95\% of all park goers on Sunday. 
 
 
 
-\begin{figure}
+
+The spikes at 10~am, 11~am, 3~pm and 4~pm are all related to Scott Jones sightings, who makes his way from the East entrance entering  Kiddie Land to Grinosaurus Stage in the Coaster Alley.
+The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
+
+\section{A scene worthwhile texting about}
+\begin{figure}[hbt]
 \centering
 <<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.6\\columnwidth', cache=TRUE>>=
 set.seed(20150814)
@@ -348,6 +355,12 @@ ggplot(data=subset(fromto, nrec > 7),
 \caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5 pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
 \end{figure}
 
+At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
+Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location from which messages are sent, their size indicates the number of messages. Messages originate mainly from a single location in front of the SabreTooth Theatre (location~64). 
+Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1,000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
+
+
+\section{A series of unfortunate events: who, when and where}
 \begin{figure}[bht]
 <<incrowd, echo=FALSE>>=
 com$back <- "other park-goers"
@@ -393,18 +406,6 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
 @
 \caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00~am and 12:59~pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
-
-The spikes at 10~am, 11~am, 3~pm and 4~pm are all related to Scott Jones sightings, who makes his way from the East entrance entering  Kiddie Land to Grinosaurus Stage in the Coaster Alley.
-The spikes in the Wet Land area and the Entry Corridor between 10:30 am and 12 pm on Sunday are related to the unfortunate events surrounding Scott Jones.
-
-\section{A scene worthwhile texting about}
-At exactly 5 pm on Saturday a flurry of messages originates from the Kiddie Land. Who is texting and why? 
-Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 5m cells covered by censors along the park's pathways (in light yellow). Orange points show the location from which messages are sent, their size indicates the number of messages. Messages originate mainly from a single location in front of the SabreTooth Theatre (location~64). 
-Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1,000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
-
-
-\section{A series of unfortunate events: who, when and where}
-
 Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00 am and 12:59 pm detailing the contributions of different groups to the peak in communication.
 A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45 am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
 
@@ -487,7 +488,7 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(alldata, day=
 #            data=subset(breaks, id %in% c(1038892)))
 
 @
-\subcaption{\label{fig:x38}  The `penguins' come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it!  }
+\subcaption{\label{fig:x38}  The `penguins' come into DinoFun World at around 9:30, but take their first ride after 12:30 pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! What were they doing there? }
 \end{subfigure}
 \begin{subfigure}{\columnwidth}
 \centering
@@ -516,7 +517,7 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 \end{figure}
 
 
-When investigating this group if 37 further we find some interesting things:  the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
+When investigating this group of 37 further we find some interesting things:  the sensors do not pick up on any movements for any one of the 37 members of the group between 9:45 until noon.
 They are either standing perfectly still - like the penguins after which we've named them -  in the same 5m x 5m cell (tile 32, 33), or they found a hole in the park's sensor system and are on the loose somewhere around the Creighton Pavilion, into which they conveniently fail to check in (see figure~\ref{fig:x38}). That is quite suspicious! If they were not actively involved in the act of vandalism, they might have seen who was.
 
 
