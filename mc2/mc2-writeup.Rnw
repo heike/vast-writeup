@@ -1,4 +1,5 @@
-\documentclass[journal]{vgtc}                % final (journal style)
+\documentclass{vgtc}                % final (journal style)
+\let\ifpdf\relax
 %\documentclass[review,journal]{vgtc}         % review (journal style)
 %\documentclass[widereview]{vgtc}             % wide-spaced review
 %\documentclass[preprint,journal]{vgtc}       % preprint (journal style)
@@ -73,7 +74,7 @@
 %% This is how authors are specified in the journal style
 
 %% indicate IEEE Member or Student Member in form indicated below
-\author{Heike Hofmann, \textit{Member, IEEE}, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, \\Carson Sievert and Samantha Tyner}
+\author{Heike Hofmann, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, \\Carson Sievert and Samantha Tyner}
 \authorfooter{
 %% insert punctuation at end of each item
 \item
@@ -524,7 +525,7 @@ They are either standing perfectly still - like the penguins after which we've n
 
 
 %% if specified like this the section will be committed in review mode
-\acknowledgments{
+\acknowledgements{
 The authors wish to thank everybody who makes the software R~\cite{R} possible, and in particular the authors of the packages knitr~\cite{knitr-book1}, ggplot2~\cite{ggplot2}, lubridate~\cite{lubridate} and dplyr~\cite{dplyr}.
 }
 
