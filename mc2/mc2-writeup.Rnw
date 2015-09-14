@@ -1,9 +1,10 @@
-\documentclass{vgtc}                % final (journal style)
-\let\ifpdf\relax
-%\documentclass[review,journal]{vgtc}         % review (journal style)
+% $Id: template.tex 11 2007-04-03 22:25:53Z jpeltier $
+
+\documentclass{vgtc}                          % final (conference style)
+%\documentclass[review]{vgtc}                 % review
 %\documentclass[widereview]{vgtc}             % wide-spaced review
-%\documentclass[preprint,journal]{vgtc}       % preprint (journal style)
-%\documentclass[electronic,journal]{vgtc}     % electronic version, journal
+%\documentclass[preprint]{vgtc}               % preprint
+%\documentclass[electronic]{vgtc}             % electronic version
 
 %% Uncomment one of the lines above depending on where your paper is
 %% in the conference process. ``review'' and ``widereview'' are for review
@@ -16,42 +17,22 @@
 %% review process. Some conferences, like IEEE Vis and InfoVis, have NOT
 %% in the past.
 
-%% Please note that the use of figures other than the optional teaser is not permitted on the first page
-%% of the journal version.  Figures should begin on the second page and be
-%% in CMYK or Grey scale format, otherwise, colour shifting may occur
-%% during the printing process.  Papers submitted with figures other than the optional teaser on the
-%% first page will be refused.
+%% Figures should be in CMYK or Grey scale format, otherwise, colour 
+%% shifting may occur during the printing process.
 
-%% These three lines bring in essential packages: ``mathptmx'' for Type 1
+%% These three lines bring in essential packages: ``mathptmx'' for Type 1 
 %% typefaces, ``graphicx'' for inclusion of EPS figures. and ``times''
 %% for proper handling of the times font family.
 
 \usepackage{mathptmx}
 \usepackage{graphicx}
 \usepackage{times}
-%\usepackage[font=small,skip=0pt]{caption}
 \usepackage[font=small,skip=5pt]{caption}
 \usepackage{subcaption}
 
 %% We encourage the use of mathptmx for consistent usage of times font
 %% throughout the proceedings. However, if you encounter conflicts
 %% with other math-related packages, you may want to disable it.
-
-%% This turns references into clickable hyperlinks.
-\usepackage[bookmarks,backref=true,linkcolor=black]{hyperref} %,colorlinks
-\hypersetup{
-  pdfauthor = {},
-  pdftitle = {},
-  pdfsubject = {},
-  pdfkeywords = {},
-  colorlinks=true,
-  linkcolor= black,
-  citecolor= black,
-  pageanchor=true,
-  urlcolor = black,
-  plainpages = false,
-  linktocpage
-}
 
 %% If you are submitting a paper to a conference for review with a double
 %% blind reviewing process, please replace the value ``0'' below with your
@@ -65,53 +46,46 @@
 \vgtcinsertpkg
 
 %% In preprint mode you may define your own headline.
-%\preprinttext{To appear in IEEE Transactions on Visualization and Computer Graphics.}
+%\preprinttext{To appear in an IEEE VGTC sponsored conference.}
 
 %% Paper title.
 
 \title{Visualizing Communication Patterns at DinoFun World}
 
-%% This is how authors are specified in the journal style
+%% This is how authors are specified in the conference style
 
-%% indicate IEEE Member or Student Member in form indicated below
-\author{Heike Hofmann, Dianne Cook, Andee Kaplan, Eric Hare, Vianey Leos-Barajas, \\Carson Sievert and Samantha Tyner}
-\authorfooter{
-%% insert punctuation at end of each item
-\item
- Heike Hofmann, Andee Kaplan, Eric Hare, Vianey  Leos-Barajas, Carson Sievert and Samatha Tyner are with the Department of Statistics, Iowa State University. E-mail: \{hofmann, ajkaplan, erichare, vianey, csievert, sctyner\}@iastate.edu.
-\item
- Dianne Cook is with the Department of Econometrics and Business Statistics, Monash University. E-mail: dicook@monash.edu.
- }
+%% Author and Affiliation (single author).
+%%\author{Roy G. Biv\thanks{e-mail: roy.g.biv@aol.com}}
+%%\affiliation{\scriptsize Allied Widgets Research}
 
-%other entries to be set up for journal
-\shortauthortitle{Hofmann \MakeLowercase{\textit{et al.}}: Visualizing Communication Patterns}
-%\shortauthortitle{Firstauthor \MakeLowercase{\textit{et al.}}: Paper Title}
+%% Author and Affiliation (multiple authors with single affiliations).
+%%\author{Roy G. Biv\thanks{e-mail: roy.g.biv@aol.com} %
+%%\and Ed Grimley\thanks{e-mail:ed.grimley@aol.com} %
+%%\and Martha Stewart\thanks{e-mail:martha.stewart@marthastewart.com}}
+%%\affiliation{\scriptsize Martha Stewart Enterprises \\ Microsoft Research}
 
-% %% Abstract section.
-% \abstract{Here goes the abstract.
-% } % end of abstract
-
-%% Keywords that describe your work. Will show as 'Index Terms' in journal
-%% please capitalize first letter and insert punctuation after last keyword
-\keywords{Spatio-temporal visualizations; Barcode plot; Enhanced map plots.}
-
-%% ACM Computing Classification System (CCS).
-%% See <http://www.acm.org/class/1998/> for details.
-%% The ``\CCScat'' command takes four arguments.
-
-\CCScatlist{ % not used in journal version
- \CCScat{K.6.1}{Management of Computing and Information Systems}%
-{Project and People Management}{Life Cycle};
- \CCScat{K.7.m}{The Computing Profession}{Miscellaneous}{Ethics}
-}
-
-
-
+%% Author and Affiliation (multiple authors with multiple affiliations)
+\author{Heike Hofmann\thanks{e-mail: \{hofmann, ajkaplan, erichare, vianey, csievert, sctyner\}@iastate.edu}\\ %
+        \scriptsize Iowa State University %
+\and Dianne Cook\thanks{e-mail:dicook@monash.edu}\\ %
+     \scriptsize Monash University %
+\and Andee Kaplan$^*$\\ %
+\scriptsize Iowa State University %
+\and Eric Hare$^*$\\ %
+\scriptsize Iowa State University %
+\and Vianey Leos-Barajas$^*$\\ %
+\scriptsize Iowa State University %
+\and Carson Sievert$^*$\\ %
+\scriptsize Iowa State University %
+\and Samantha Tyner$^*$\\ %
+\scriptsize Iowa State University}
 
 %% Uncomment below to include a teaser figure.
    \teaser{
+   \vspace{-.15in}\\
     \centering
     \includegraphics[width=.7\linewidth]{figure/omni-1.pdf}
+   \vspace{-.15in}
 \caption{\label{fig:overview} Number of messages sent from different locations in the park at each minute of the day. In color, we see the two park systems in action: the park's help line (shown in orange) gets very busy twice on Sunday, once at 11\,am, and, slightly less so, at 3\,pm. Points in green are trivia questions sent out at five minute intervals to park goers by the DinoFun World app. About a quarter of park goers opts to get these questions. The Scott Jones shows at 10-11\,am each day and 3-4\,pm on Friday and Saturday creates a dip in the number of messages, which is particularly strongly pronounced in the Wet Land area. The flare-ups in the number of messages sent from  Coaster Alley are related to park-goers sending messages as they are filing out of the Scott Jones show, while the spike of messages from the Wet Land is triggered by the discovery of the act of vandalism.}}
 
 %% Uncomment below to disable the manuscript note
@@ -343,6 +317,7 @@ The spikes in the Wet Land area and the Entry Corridor between 10:30\,am and 12\
 
 \section{A scene worthwhile texting about}
 \begin{figure}[hbt]
+   \vspace{-.15in}\\
 \centering
 <<kiddies-network, dependson='kiddies-data', echo=FALSE, fig.width=6, fig.height=6, out.width='0.6\\columnwidth', cache=TRUE>>=
 set.seed(20150814)
@@ -353,6 +328,7 @@ ggplot(data=subset(fromto, nrec > 7),
   theme(axis.ticks=element_blank(), axis.text=element_blank()) + 
   ggtitle("Network of messages sent from the Kiddie Land at 5:00 pm")
 @
+   \vspace{-.125in}
 \caption{\label{fig:net}Network of messages sent from the Kiddie Land at 5\,pm. Over 1,000 messages are sent by just a few individuals that make up a loosely connected network. }
 \end{figure}
 
@@ -363,6 +339,7 @@ Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-l
 
 \section{A series of unfortunate events: who, when and where}
 \begin{figure}[bht]
+   \vspace{-.15in}\\
 <<incrowd, echo=FALSE>>=
 com$back <- "other park-goers"
 com$back[com$to=="839736"] <- "Park help-line"
@@ -405,13 +382,11 @@ xlab("Time of the day") + ylab("Number of total messages by minute") + theme_bw(
   theme(plot.margin=unit(c(0,0,0,0), unit="cm")) +
   ggtitle("Who was sending messages?")
 @
+   \vspace{-.125in}
 \caption{\label{fig:towhom} Zoom into communications out of the Wet Land area on Sunday between 11:00\,am and 12:59\,pm. Several sources contribute to the spikes in sent messages. }
 \end{figure}
 Figure~\ref{fig:towhom} shows the number of messages that originated from the Wet Land area by minute on Sunday between 11:00\,am and 12:59\,pm detailing the contributions of different groups to the peak in communication.
 A tight group of 37 park goers is responsible for a first peak in messages around 11:30 - 11:45\,am. This peak is made up of messages going forth-and-back between members of this group. The decrease in the number of messages among these guys goes hand-in-hand with a spike in messages to external recipients. This peak is immediately followed by a peak of messages right at noon spiking to over 1,500 messages to the park's help-line,  likely related to the closing of Creighton Pavilion for the remainder of the day. While messages to the help-line calm down again over the next half an hour, the help-line stays busier than on a regular day.
-
-
-
 
 
 \begin{figure}
@@ -459,6 +434,7 @@ checkinsgr <- merge(checkinsgr, parkX, by=c("X", "Y"), all=T)
 @
 \begin{subfigure}{\columnwidth}
 \centering
+\subcaption{\label{fig:x38}  The `penguins' are a closely knit group that comes into DinoFun World at around 9:30, but takes their first ride after 12:30\,pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! What were they doing there? }
 <<x38, echo=FALSE, fig.width=7, fig.height=4.25, out.width='0.8\\columnwidth'>>=
 #checkinsgr <- read.csv("../mc1/data/checkinsgr.csv")
 #checkinsgr$Timestamp <- ymd_hms(checkinsgr$Timestamp)
@@ -489,11 +465,10 @@ qplot(x=dmin, xend=dmin+timespent/60^2, y=id, yend=id, data=subset(alldata, day=
 #            data=subset(breaks, id %in% c(1038892)))
 
 @
-\subcaption{\label{fig:x38}  The `penguins' are a closely knit group that comes into DinoFun World at around 9:30, but takes their first ride after 12:30\,pm - before that they spend a long time in or around Creighton Pavilion, however they never check into it! What were they doing there? }
 \end{subfigure}
 \begin{subfigure}{\columnwidth}
 \centering
-
+\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45\,am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. They are rather early with sending the external messages. Did they know more than the other park-goers?}
 <<messages, echo=FALSE, fig.width=7, fig.height=4, out.width='0.8\\columnwidth'>>=
 s38 <- subset(com, from %in% x38)
 s38$from <- factor(s38$from)
@@ -512,8 +487,8 @@ ggplot(aes(x=dmin/60, y=from, colour=back), data=s38) +
 
 @
 
-\caption{\label{fig:messages} Messages sent from the 37 `penguins'. Between 11:30 and 11:45\,am there is a flurry of messages among the members of the group.  About half of them take part in the Cindysaurus Trivia game. They are rather early with sending the external messages. Did they know more than the other park-goers?}
 \end{subfigure}
+\vspace{-.12in}
 \caption{\label{fig:penguins} What is the group of `penguins' up to?}
 \end{figure}
 
