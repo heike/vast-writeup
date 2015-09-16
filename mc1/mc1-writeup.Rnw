@@ -49,7 +49,7 @@
 
 %% Paper title.
 
-\title{On the move at DinoFun World}
+\title{On the Move at DinoFun World}
 
 %% This is how authors are specified in the conference style
 
@@ -294,7 +294,7 @@ ggplot(data=checkinsplus) +
 Fig~\ref{fig:timeinthrill} shows operating times of each of the thrill rides: on the right time of day is shown, along the y-axis, the amount of time spent in a ride. Operating time is shown as a line, each line corresponds to one individual in a ride. The longer the line, the longer an individual spent in the ride. This includes waiting times after checking into the ride. It is obvious, that rides are much busier on Sunday. On weekend days park-goers have to calculate to take one hour for one ride of the Flight of the Swingodon, whereas they can manage about 3-4 rides an hour of the Flight of the Swingodon on Friday. The pattern of ‘droplets’ under each of the thick lines indicate people who have checked into a ride, but leave before it is their turn to take it. Just before 3pm on Sunday, a lot of these droplets occur across all the backed up thrill rides - maybe these people want to go to the (by now cancelled) Scott Jones show? DinoFun needs to work on their general announcement system!
 
 
-\subsection{Barcode of activities}\label{sec:groups}
+\subsection{Barcode of Activities}\label{sec:groups}
 We  define a group as a set of people who ride the same rides together.
 %
 We exclude any of the rides that are potentially walk-throughs: Atmosfear, Galactosaurus Rage and Dykesadactyl Thrill. Beyond that we include all of the Thrill Rides, Kiddie Rides and Rides for Everyone.

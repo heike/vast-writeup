@@ -316,7 +316,7 @@ The park's help line (839736) on the other hand, has a very different pattern: e
 The spikes at 11\,am and 4\,pm are triggered by people texting while filing out of the Scott Jones show.
 The spikes in the Wet Land area and the Entry Corridor between 10:30\,am and 12\,pm on Sunday are related to the unfortunate events surrounding Scott Jones.
 
-\section{A scene worthwhile texting about}
+\section{A Scene Worthwhile Texting About}
 \begin{figure}[hbt]
    \vspace{-.15in}\\
 \centering
@@ -338,7 +338,7 @@ Figure~\ref{fig:map} shows a map of the park overlaid by all of the park's 5m x 
 Figure~\ref{fig:net} gives an overview of who is texting whom -- as the flower-like shapes in the network indicate, most of the 1,000 text messages are sent from just a few senders, but groups are not operating in total isolation; they are linked through some individuals, who either get messages from two sources, or pass on messages from one group to the other. The DinoFun Park app's friending service is definitely used!
 
 
-\section{A series of unfortunate events: who, when and where}
+\section{A Series of Unfortunate Events: Who, When and Where}
 \begin{figure}[bht]
    \vspace{-.15in}\\
 <<incrowd, echo=FALSE>>=
